@@ -19,17 +19,9 @@
         <!-- Category Filter Pills -->
         <div class="category-pills">
             <a href="{% url 'store:shop' %}" class="pill-item {% if not selected_category %}active{% endif %}">All Products</a>
-            {% if categories %}
-                {% for cat in categories %}
-                    <a href="{% url 'store:shop' %}?category={{ cat.slug }}" class="pill-item {% if selected_category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
-                {% endfor %}
-            {% else %}
-                <a href="{% url 'store:shop' %}?category=vegetables" class="pill-item {% if selected_category == 'vegetables' %}active{% endif %}">Vegetables</a>
-                <a href="{% url 'store:shop' %}?category=fruits" class="pill-item {% if selected_category == 'fruits' %}active{% endif %}">Fruits</a>
-                <a href="{% url 'store:shop' %}?category=grains" class="pill-item {% if selected_category == 'grains' %}active{% endif %}">Grains &amp; Pulses</a>
-                <a href="{% url 'store:shop' %}?category=natural" class="pill-item {% if selected_category == 'natural' %}active{% endif %}">Natural Products</a>
-                <a href="{% url 'store:shop' %}?category=combos" class="pill-item {% if selected_category == 'combos' %}active{% endif %}">Combo Packs</a>
-            {% endif %}
+            {% for cat in categories %}
+                <a href="{% url 'store:shop' %}?category={{ cat.slug }}" class="pill-item {% if selected_category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
         </div>
 
         <!-- Search & Sort Controls -->
@@ -76,19 +68,11 @@
             </div>
             {% endfor %}
         {% else %}
-            {% for item in fallback_products %}
-            <div class="product-card">
-                <div class="product-badge">{{ item.category }}</div>
-                <div class="product-image">
-                    <img src="{{ item.image }}" alt="{{ item.name }}">
-                </div>
-                <div class="product-details">
-                    <h3 class="product-name">{{ item.name }}</h3>
-                    <p class="product-price">&#8377;{{ item.price }} <span class="unit">/ {{ item.unit }}</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
+            <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                <i data-feather="package" style="width: 48px; height: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                <h3>No Products Found</h3>
+                <p>No products available matching your selection. Please add products in Admin or try a different filter.</p>
             </div>
-            {% endfor %}
         {% endif %}
     </div>
 </section>
