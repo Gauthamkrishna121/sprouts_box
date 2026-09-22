@@ -39,40 +39,23 @@
     </div>
     
     <div class="category-grid">
-        {% if categories %}
-            {% for category in categories %}
-            <div class="category-card">
-                <div class="category-image-wrap">
-                    <img src="{{ category.image.url }}" alt="{{ category.name }}" onerror="this.src='/static/plugin/images/cat_vegetables.png'">
-                </div>
-                <div class="category-info">
-                    <h3>{{ category.name }}</h3>
-                    <span class="category-arrow-icon"><i data-feather="arrow-right"></i></span>
-                </div>
+        {% for category in categories %}
+        <a href="{% url 'store:shop' %}?category={{ category.slug }}" class="category-card">
+            <div class="category-image-wrap">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                {% else %}
+                    <img src="/static/plugin/images/cat_vegetables.png" alt="{{ category.name }}">
+                {% endif %}
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="category-card">
-                <div class="category-image-wrap"><img src="/static/plugin/images/cat_vegetables.png" alt="Vegetables"></div>
-                <div class="category-info"><h3>Vegetables</h3><span class="category-arrow-icon"><i data-feather="arrow-right"></i></span></div>
+            <div class="category-info">
+                <h3>{{ category.name }}</h3>
+                <span class="category-arrow-icon"><i data-feather="arrow-right"></i></span>
             </div>
-            <div class="category-card">
-                <div class="category-image-wrap"><img src="/static/plugin/images/cat_fruits.png" alt="Fruits"></div>
-                <div class="category-info"><h3>Fruits</h3><span class="category-arrow-icon"><i data-feather="arrow-right"></i></span></div>
-            </div>
-            <div class="category-card">
-                <div class="category-image-wrap"><img src="/static/plugin/images/cat_grains.png" alt="Grains & Pulses"></div>
-                <div class="category-info"><h3>Grains & Pulses</h3><span class="category-arrow-icon"><i data-feather="arrow-right"></i></span></div>
-            </div>
-            <div class="category-card">
-                <div class="category-image-wrap"><img src="/static/plugin/images/cat_natural.png" alt="Natural Products"></div>
-                <div class="category-info"><h3>Natural Products</h3><span class="category-arrow-icon"><i data-feather="arrow-right"></i></span></div>
-            </div>
-            <div class="category-card">
-                <div class="category-image-wrap"><img src="/static/plugin/images/cat_combos.png" alt="Combo Packs"></div>
-                <div class="category-info"><h3>Combo Packs</h3><span class="category-arrow-icon"><i data-feather="arrow-right"></i></span></div>
-            </div>
-        {% endif %}
+        </a>
+        {% empty %}
+        <p style="grid-column: 1/-1; color: var(--text-muted);">No categories available.</p>
+        {% endfor %}
     </div>
 </section>
 
@@ -119,66 +102,24 @@
     </div>
 
     <div class="product-grid">
-        {% if featured_products %}
-            {% for product in featured_products %}
-            <div class="product-card">
-                <div class="product-image">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                    {% else %}
-                        <img src="/static/plugin/images/prod_tomatoes.png" alt="{{ product.name }}">
-                    {% endif %}
-                </div>
-                <div class="product-details">
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    <p class="product-price">&#8377;{{ product.price }} <span class="unit">/ {{ product.unit }}</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
+        {% for product in featured_products %}
+        <div class="product-card">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="/static/plugin/images/prod_tomatoes.png" alt="{{ product.name }}">
+                {% endif %}
             </div>
-            {% endfor %}
-        {% else %}
-            <!-- Static fallbacks matching Image 2 -->
-            <div class="product-card">
-                <div class="product-image"><img src="/static/plugin/images/prod_tomatoes.png" alt="Organic Tomatoes"></div>
-                <div class="product-details">
-                    <h3 class="product-name">Organic Tomatoes</h3>
-                    <p class="product-price">&#8377;60 <span class="unit">/ kg</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
+            <div class="product-details">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-price">&#8377;{{ product.price }} <span class="unit">/ {{ product.unit }}</span></p>
+                <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
             </div>
-            <div class="product-card">
-                <div class="product-image"><img src="/static/plugin/images/prod_spinach.png" alt="Fresh Green Spinach"></div>
-                <div class="product-details">
-                    <h3 class="product-name">Fresh Green Spinach</h3>
-                    <p class="product-price">&#8377;40 <span class="unit">/ bunch</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-image"><img src="/static/plugin/images/prod_bananas.png" alt="Organic Bananas"></div>
-                <div class="product-details">
-                    <h3 class="product-name">Organic Bananas</h3>
-                    <p class="product-price">&#8377;50 <span class="unit">/ kg</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-image"><img src="/static/plugin/images/cat_natural.png" alt="Raw Honey"></div>
-                <div class="product-details">
-                    <h3 class="product-name">Raw Honey</h3>
-                    <p class="product-price">&#8377;280 <span class="unit">/ 500g</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-image"><img src="/static/plugin/images/cat_grains.png" alt="Toor Dal"></div>
-                <div class="product-details">
-                    <h3 class="product-name">Toor Dal</h3>
-                    <p class="product-price">&#8377;90 <span class="unit">/ kg</span></p>
-                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
-                </div>
-            </div>
-        {% endif %}
+        </div>
+        {% empty %}
+        <p style="grid-column: 1/-1; color: var(--text-muted);">No featured products available at the moment.</p>
+        {% endfor %}
     </div>
 </section>
 
