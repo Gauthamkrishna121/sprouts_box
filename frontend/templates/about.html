@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us | Sprouts Box{% endblock %}
+
+{% block content %}
+<!-- About Hero Banner -->
+<section class="page-hero">
+    <div class="page-hero-content">
+        <span class="section-subtitle"><i data-feather="leaf"></i> Our Story &amp; Vision</span>
+        <h1 class="page-title">Rooted in Pure Nature</h1>
+        <p class="page-subtitle">Connecting local farmers with health-conscious families through 100% organic, chemical-free produce.</p>
+    </div>
+</section>
+
+<!-- About Story Section -->
+<section class="about-story-section">
+    <div class="about-story-container">
+        <div class="about-image-column">
+            <img src="/static/plugin/images/sprout_hands.png" alt="Our Farm Journey" class="about-main-img">
+            <div class="about-badge-card">
+                <i data-feather="award"></i>
+                <div>
+                    <h4>100% Certified</h4>
+                    <p>Organic &amp; Sustainable</p>
+                </div>
+            </div>
+        </div>
+        <div class="about-text-column">
+            <span class="section-subtitle"><i data-feather="heart"></i> Driven by Passion &mdash;</span>
+            <h2 class="section-title">Bringing Freshness From Fields to Your Kitchen</h2>
+            <p class="about-lead">Sprouts Box was founded with a simple yet powerful mission: to restore the bond between people and pure, unadulterated food.</p>
+            <p class="about-text">We partner directly with small-scale local farmers in Kerala who practice regenerative, eco-friendly agriculture. By eliminating middle traders, we ensure our farmers earn fair wages while bringing you produce harvested at peak ripeness, completely free from harmful pesticides, artificial waxes, or chemicals.</p>
+            
+            <div class="about-stats-grid">
+                <div class="stat-box">
+                    <h3>100%</h3>
+                    <p>Natural &amp; Chemical Free</p>
+                </div>
+                <div class="stat-box">
+                    <h3>500+</h3>
+                    <p>Local Farming Partners</p>
+                </div>
+                <div class="stat-box">
+                    <h3>10k+</h3>
+                    <p>Happy Families Served</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="values-section">
+    <div class="section-header center">
+        <div>
+            <span class="section-subtitle"><i data-feather="sun"></i> Our Core Values &mdash;</span>
+            <h2 class="section-title">What Makes Sprouts Box Different</h2>
+        </div>
+    </div>
+
+    <div class="values-grid">
+        <div class="value-card">
+            <div class="value-icon"><i data-feather="shield-check"></i></div>
+            <h3>Zero Harmful Chemicals</h3>
+            <p>Every single vegetable and fruit is grown using natural compost and organic pest management. No toxic sprays ever.</p>
+        </div>
+        <div class="value-card">
+            <div class="value-icon"><i data-feather="users"></i></div>
+            <h3>Fair Support for Farmers</h3>
+            <p>We empower local farming communities by providing fair prices and long-term sustainable livelihood guarantees.</p>
+        </div>
+        <div class="value-card">
+            <div class="value-icon"><i data-feather="truck"></i></div>
+            <h3>Same-Day Harvest Delivery</h3>
+            <p>Your orders are picked directly from our partner fields at dawn and packed with care to reach your doorstep fresh.</p>
+        </div>
+        <div class="value-card">
+            <div class="value-icon"><i data-feather="globe"></i></div>
+            <h3>Eco-Friendly Packaging</h3>
+            <p>We say no to single-use plastics. All produce is packed in biodegradable jute sacks, brown paper, and wooden boxes.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Quote Banner -->
+<section class="promo-banner-section">
+    <div class="promo-banner">
+        <div class="promo-content">
+            <h2>"Health is a relationship between you and your body. Nourish it with nature."</h2>
+            <p>&mdash; The Sprouts Box Promise</p>
+            <a href="{% url 'store:shop' %}" class="btn btn-light">Shop Organic Today <i data-feather="arrow-right"></i></a>
+        </div>
+        <div class="promo-decorative">
+            <span class="script-tag">Lush &amp; Healthy</span>
+        </div>
+    </div>
+</section>
+{% endblock content %}

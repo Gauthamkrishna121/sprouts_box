@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Shop Organic Produce | Sprouts Box{% endblock %}
+
+{% block content %}
+<!-- Shop Banner Header -->
+<section class="shop-hero">
+    <div class="shop-hero-content">
+        <span class="section-subtitle"><i data-feather="leaf"></i> Farm Fresh Store</span>
+        <h1 class="shop-title">Our Organic Collection</h1>
+        <p class="shop-subtitle">Discover chemical-free, farm-fresh produce harvested straight from local fields.</p>
+    </div>
+</section>
+
+<!-- Shop Main Section -->
+<section class="shop-container-section">
+    <!-- Filter and Search Toolbar -->
+    <div class="shop-toolbar">
+        <!-- Category Filter Pills -->
+        <div class="category-pills">
+            <a href="{% url 'store:shop' %}" class="pill-item {% if not selected_category %}active{% endif %}">All Products</a>
+            {% if categories %}
+                {% for cat in categories %}
+                    <a href="{% url 'store:shop' %}?category={{ cat.slug }}" class="pill-item {% if selected_category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+                {% endfor %}
+            {% else %}
+                <a href="{% url 'store:shop' %}?category=vegetables" class="pill-item {% if selected_category == 'vegetables' %}active{% endif %}">Vegetables</a>
+                <a href="{% url 'store:shop' %}?category=fruits" class="pill-item {% if selected_category == 'fruits' %}active{% endif %}">Fruits</a>
+                <a href="{% url 'store:shop' %}?category=grains" class="pill-item {% if selected_category == 'grains' %}active{% endif %}">Grains &amp; Pulses</a>
+                <a href="{% url 'store:shop' %}?category=natural" class="pill-item {% if selected_category == 'natural' %}active{% endif %}">Natural Products</a>
+                <a href="{% url 'store:shop' %}?category=combos" class="pill-item {% if selected_category == 'combos' %}active{% endif %}">Combo Packs</a>
+            {% endif %}
+        </div>
+
+        <!-- Search & Sort Controls -->
+        <div class="toolbar-controls">
+            <form method="GET" action="{% url 'store:shop' %}" class="shop-search-form">
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                <div class="search-input-wrap">
+                    <i data-feather="search" class="search-icon"></i>
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search products..." class="search-input">
+                </div>
+            </form>
+
+            <form method="GET" action="{% url 'store:shop' %}" class="shop-sort-form">
+                {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+                <select name="sort" class="sort-select" onchange="this.form.submit()">
+                    <option value="">Sort By: Default</option>
+                    <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name: A to Z</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="product-grid shop-product-grid">
+        {% if products %}
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-badge">{{ product.category.name }}</div>
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="/static/plugin/images/prod_tomatoes.png" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+                <div class="product-details">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-price">&#8377;{{ product.price }} <span class="unit">/ {{ product.unit }}</span></p>
+                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            {% for item in fallback_products %}
+            <div class="product-card">
+                <div class="product-badge">{{ item.category }}</div>
+                <div class="product-image">
+                    <img src="{{ item.image }}" alt="{{ item.name }}">
+                </div>
+                <div class="product-details">
+                    <h3 class="product-name">{{ item.name }}</h3>
+                    <p class="product-price">&#8377;{{ item.price }} <span class="unit">/ {{ item.unit }}</span></p>
+                    <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</section>
+{% endblock content %}

@@ -22,11 +22,19 @@
             </a>
             
             <nav class="nav-links">
+<<<<<<< Updated upstream
                 <a href="{% url 'store:home' %}" class="active">Home</a>
                 <a href="#">Shop</a>
                 <a href="#">About Us</a>
                 <a href="#">Sustainability</a>
                 <a href="#">Contact</a>
+=======
+                <a href="{% url 'store:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                <a href="{% url 'store:shop' %}" class="nav-item {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
+                <a href="{% url 'store:about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a>
+                <a href="#" class="nav-item">Sustainability</a>
+                <a href="{% url 'store:contact' %}" class="nav-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+>>>>>>> Stashed changes
             </nav>
 
             <div class="nav-actions">
@@ -58,9 +66,15 @@
             <div class="footer-links">
                 <h4>Quick Links</h4>
                 <a href="{% url 'store:home' %}">Home</a>
+<<<<<<< Updated upstream
                 <a href="#">Shop</a>
                 <a href="#">About Us</a>
                 <a href="#">Contact</a>
+=======
+                <a href="{% url 'store:shop' %}">Shop</a>
+                <a href="{% url 'store:about' %}">About Us</a>
+                <a href="{% url 'store:contact' %}">Contact</a>
+>>>>>>> Stashed changes
             </div>
 
             <div class="footer-contact">
