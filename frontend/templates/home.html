@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <span class="hero-subtitle"><i data-feather="leaf"></i> Fresh From Our Farms</span>
+        <h1 class="hero-title">Pure Goodness<br>for a Healthier You</h1>
+        <p class="hero-desc">Discover farm-fresh, chemical-free produce and<br>natural products — straight from our fields to your home.</p>
+        <a href="#" class="btn btn-primary">Shop Now <i data-feather="arrow-right"></i></a>
+        
+        <div class="hero-badges">
+            <div class="badge">
+                <i data-feather="check-circle"></i>
+                <span>100% Natural<br>& Organic</span>
+            </div>
+            <div class="badge">
+                <i data-feather="truck"></i>
+                <span>Freshly Harvested<br>& Carefully Packed</span>
+            </div>
+            <div class="badge">
+                <i data-feather="heart"></i>
+                <span>Good for You<br>& the Planet</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Shop by Category -->
+<section class="categories-section">
+    <div class="section-header">
+        <div>
+            <span class="section-subtitle"><i data-feather="leaf"></i> Shop by Category</span>
+            <h2 class="section-title">Nature's Best, Just for You</h2>
+        </div>
+        <a href="#" class="view-all-link">View All Products <i data-feather="arrow-right"></i></a>
+    </div>
+    
+    <div class="category-grid">
+        <!-- Static fallback if database is empty -->
+        {% if categories %}
+            {% for category in categories %}
+            <div class="category-card">
+                <div class="category-image-wrap">
+                    <img src="https://placehold.co/400x250?text={{ category.name }}" alt="{{ category.name }}">
+                </div>
+                <div class="category-info">
+                    <h3>{{ category.name }}</h3>
+                    <i data-feather="arrow-right-circle"></i>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="category-card"><img src="https://placehold.co/400x250?text=Vegetables" alt="Vegetables"><div class="category-info"><h3>Vegetables</h3><i data-feather="arrow-right-circle"></i></div></div>
+            <div class="category-card"><img src="https://placehold.co/400x250?text=Fruits" alt="Fruits"><div class="category-info"><h3>Fruits</h3><i data-feather="arrow-right-circle"></i></div></div>
+            <div class="category-card"><img src="https://placehold.co/400x250?text=Grains" alt="Grains"><div class="category-info"><h3>Grains & Pulses</h3><i data-feather="arrow-right-circle"></i></div></div>
+            <div class="category-card"><img src="https://placehold.co/400x250?text=Natural" alt="Natural"><div class="category-info"><h3>Natural Products</h3><i data-feather="arrow-right-circle"></i></div></div>
+            <div class="category-card"><img src="https://placehold.co/400x250?text=Combos" alt="Combos"><div class="category-info"><h3>Combo Packs</h3><i data-feather="arrow-right-circle"></i></div></div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="why-us-section">
+    <div class="why-us-image">
+        <img src="https://placehold.co/600x400?text=Sprout+in+Hands" alt="Sustainable Farming">
+    </div>
+    <div class="why-us-content">
+        <span class="section-subtitle"><i data-feather="leaf"></i> Why Choose Sprouts Box</span>
+        <h2 class="section-title">Good for You. Better for Farmers.</h2>
+        <p>At Sprouts Box, we bring you fresh, natural, and chemical-free produce while supporting local farmers and sustainable agriculture.</p>
+        
+        <div class="why-us-features">
+            <div class="feature">
+                <i data-feather="droplet"></i>
+                <span>Organic & Natural<br>Products</span>
+            </div>
+            <div class="feature">
+                <i data-feather="users"></i>
+                <span>Supports Local<br>Farmers</span>
+            </div>
+            <div class="feature">
+                <i data-feather="globe"></i>
+                <span>Sustainable<br>Farming Practices</span>
+            </div>
+            <div class="feature">
+                <i data-feather="shield"></i>
+                <span>Freshness<br>Guaranteed</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="products-section">
+    <div class="section-header">
+        <div>
+            <span class="section-subtitle"><i data-feather="leaf"></i> Featured Products</span>
+        </div>
+        <a href="#" class="view-all-link">View All <i data-feather="arrow-right"></i></a>
+    </div>
+
+    <div class="product-grid">
+        {% if featured_products %}
+            {% for product in featured_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://placehold.co/400x400?text={{ product.name }}" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+                <div class="product-details">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-price">₹{{ product.price }} <span class="unit">/ {{ product.unit }}</span></p>
+                    <button class="btn btn-secondary"><i data-feather="shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Static fallbacks -->
+            <div class="product-card">
+                <div class="product-image"><img src="https://placehold.co/400x400?text=Tomatoes" alt="Tomatoes"></div>
+                <div class="product-details">
+                    <h3 class="product-name">Organic Tomatoes</h3>
+                    <p class="product-price">₹60 <span class="unit">/ kg</span></p>
+                    <button class="btn btn-secondary"><i data-feather="shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image"><img src="https://placehold.co/400x400?text=Spinach" alt="Spinach"></div>
+                <div class="product-details">
+                    <h3 class="product-name">Fresh Green Spinach</h3>
+                    <p class="product-price">₹40 <span class="unit">/ bunch</span></p>
+                    <button class="btn btn-secondary"><i data-feather="shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image"><img src="https://placehold.co/400x400?text=Bananas" alt="Bananas"></div>
+                <div class="product-details">
+                    <h3 class="product-name">Organic Bananas</h3>
+                    <p class="product-price">₹50 <span class="unit">/ kg</span></p>
+                    <button class="btn btn-secondary"><i data-feather="shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image"><img src="https://placehold.co/400x400?text=Honey" alt="Honey"></div>
+                <div class="product-details">
+                    <h3 class="product-name">Raw Honey</h3>
+                    <p class="product-price">₹280 <span class="unit">/ 500g</span></p>
+                    <button class="btn btn-secondary"><i data-feather="shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image"><img src="https://placehold.co/400x400?text=Toor+Dal" alt="Toor Dal"></div>
+                <div class="product-details">
+                    <h3 class="product-name">Toor Dal</h3>
+                    <p class="product-price">₹90 <span class="unit">/ kg</span></p>
+                    <button class="btn btn-secondary"><i data-feather="shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Promotional Banner -->
+<section class="promo-banner">
+    <div class="promo-content">
+        <h2>Healthy Choices. A Greener Tomorrow.</h2>
+        <p>Choose natural. Choose local. Choose Sprouts Box.</p>
+        <a href="#" class="btn btn-light">Explore Our Products <i data-feather="arrow-right"></i></a>
+    </div>
+    <div class="promo-logo">
+        <span class="script-logo">Lush & Healthy</span>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+    <div class="section-header">
+        <div>
+            <span class="section-subtitle"><i data-feather="leaf"></i> What Our Customers Say</span>
+            <h2 class="section-title">Trusted by Families, Loved by Nature</h2>
+        </div>
+    </div>
+    
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <p class="quote">"The quality of the vegetables is amazing! Fresh, clean and exactly as promised. Highly recommended!"</p>
+            <div class="customer-info">
+                <img src="https://placehold.co/100x100?text=P" alt="Customer" class="avatar">
+                <div>
+                    <h4>— Priya S.</h4>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <p class="quote">"I love that they support local farmers and provide chemical-free produce. Will definitely order again!"</p>
+            <div class="customer-info">
+                <img src="https://placehold.co/100x100?text=A" alt="Customer" class="avatar">
+                <div>
+                    <h4>— Arjun M.</h4>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <p class="quote">"The fruits are super fresh and taste so natural. This is my go-to place for organic produce."</p>
+            <div class="customer-info">
+                <img src="https://placehold.co/100x100?text=N" alt="Customer" class="avatar">
+                <div>
+                    <h4>— Neha R.</h4>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

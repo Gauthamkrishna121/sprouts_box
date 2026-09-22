@@ -1,0 +1,80 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static admin_filters %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}" {% csp_nonce_attr %}>{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main" class="custom-dashboard">
+    <div class="dashboard-welcome">
+        <h2>Welcome to the Lush & Healthy Dashboard! 🌿</h2>
+        <p>This is your control center. From here, you can easily manage your farm-fresh products, organize categories, and oversee your store.</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <h3>🛍️ Manage Products</h3>
+            <p>Add new items, update prices, and upload product images to display on the live website.</p>
+            <div class="card-actions">
+                <a href="{% url 'admin:store_product_add' %}" class="btn-dashboard primary">+ Add New Product</a>
+                <a href="{% url 'admin:store_product_changelist' %}" class="btn-dashboard secondary">View All Products</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>📁 Categories</h3>
+            <p>Organize your products into logical categories (e.g., Vegetables, Fruits) to help customers browse easily.</p>
+            <div class="card-actions">
+                <a href="{% url 'admin:store_category_add' %}" class="btn-dashboard primary">+ Add Category</a>
+                <a href="{% url 'admin:store_category_changelist' %}" class="btn-dashboard secondary">Manage Categories</a>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>👥 Users & Access</h3>
+            <p>Manage administrators, staff permissions, and customer accounts.</p>
+            <div class="card-actions">
+                <a href="{% url 'admin:auth_user_changelist' %}" class="btn-dashboard secondary">Manage Users</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="content-related">
+    <div class="module" id="recent-actions-module">
+        <h2>{% translate 'Recent actions' %}</h2>
+        <h3>{% translate 'My actions' %}</h3>
+            {% load log %}
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% translate 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                <span class="visually-hidden">{% if entry.is_addition %}{% translate 'Added:' %}{% elif entry.is_change %}{% translate 'Changed:' %}{% elif entry.is_deletion %}{% translate 'Deleted:' %}{% endif %}</span>
+                {% if entry.is_deletion or not entry.get_admin_url %}
+                    {{ entry.object_repr|to_object_display_value }}
+                {% else %}
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr|to_object_display_value }}</a>
+                {% endif %}
+                <br>
+                {% if entry.content_type %}
+                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                {% else %}
+                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}

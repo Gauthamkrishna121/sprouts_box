@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sprouts Box | Lush & Healthy{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Icons (Feather Icons or similar lightweight) -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'store:home' %}" class="brand-logo">
+                <img src="/static/images/logo.png" alt="Sprouts Box Logo" onerror="this.src='https://placehold.co/150x50?text=Sprouts+Box'">
+            </a>
+            
+            <nav class="nav-links">
+                <a href="{% url 'store:home' %}" class="active">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">About Us</a>
+                <a href="#">Sustainability</a>
+                <a href="#">Contact</a>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="#" class="icon-link"><i data-feather="search"></i></a>
+                <a href="#" class="icon-link"><i data-feather="user"></i></a>
+                <a href="#" class="icon-link cart-icon">
+                    <i data-feather="shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <button class="mobile-menu-btn"><i data-feather="menu"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="/static/images/logo-white.png" alt="Sprouts Box Logo" onerror="this.src='https://placehold.co/150x50/1B4332/FFFFFF?text=Sprouts+Box'">
+                <p>Fresh produce. Healthy living.<br>A sustainable future.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="{% url 'store:home' %}">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <p><i data-feather="phone"></i> +91 98765 43210</p>
+                <p><i data-feather="mail"></i> hello@sproutsbox.in</p>
+                <p><i data-feather="map-pin"></i> Kerala, India</p>
+            </div>
+
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#"><i data-feather="instagram"></i></a>
+                    <a href="#"><i data-feather="facebook"></i></a>
+                    <a href="#"><i data-feather="youtube"></i></a>
+                    <a href="#"><i data-feather="twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Sprouts Box. All rights reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Icons -->
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

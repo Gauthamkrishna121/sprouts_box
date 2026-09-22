@@ -1,0 +1,33 @@
+{% load i18n static %}
+<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
+<nav class="sticky" id="nav-sidebar">
+  <!-- Search Filter (Standard Django) -->
+  <input type="search" id="nav-filter"
+         placeholder="{% translate 'Start typing to filter…' %}"
+         aria-label="{% translate 'Filter navigation items' %}">
+  
+  <div class="custom-sidebar">
+    <div class="sidebar-section">
+      <h3><img src="{% static 'admin/img/icon-changelink.svg' %}" alt=""> Store Management</h3>
+      <ul class="sidebar-menu">
+        <li><a href="{% url 'admin:store_product_changelist' %}">Products</a></li>
+        <li><a href="{% url 'admin:store_category_changelist' %}">Categories</a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-section">
+      <h3><img src="{% static 'admin/img/icon-addlink.svg' %}" alt=""> User Management</h3>
+      <ul class="sidebar-menu">
+        <li><a href="{% url 'admin:auth_user_changelist' %}">Users (Customers/Admins)</a></li>
+        <li><a href="{% url 'admin:auth_group_changelist' %}">Roles & Permissions</a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-section">
+      <h3><img src="{% static 'admin/img/icon-viewlink.svg' %}" alt="" onerror="this.style.display='none'"> Settings</h3>
+      <ul class="sidebar-menu">
+        <li><a href="{% url 'store:home' %}" target="_blank">View Live Website ↗</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
