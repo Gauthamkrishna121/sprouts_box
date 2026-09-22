@@ -24,9 +24,9 @@
             <nav class="nav-links">
                 <a href="{% url 'store:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
                 <a href="{% url 'store:shop' %}" class="nav-item {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
-                <a href="#" class="nav-item">About Us</a>
+                <a href="{% url 'store:about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a>
                 <a href="#" class="nav-item">Sustainability</a>
-                <a href="#" class="nav-item">Contact</a>
+                <a href="{% url 'store:contact' %}" class="nav-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
             </nav>
 
             <div class="nav-actions">
@@ -61,8 +61,8 @@
                 <h4>Quick Links</h4>
                 <a href="{% url 'store:home' %}">Home</a>
                 <a href="{% url 'store:shop' %}">Shop</a>
-                <a href="#">About Us</a>
-                <a href="#">Contact</a>
+                <a href="{% url 'store:about' %}">About Us</a>
+                <a href="{% url 'store:contact' %}">Contact</a>
             </div>
 
             <div class="footer-column">
