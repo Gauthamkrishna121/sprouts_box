@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sprouts Box | Lush & Healthy{% endblock %}</title>
+    <title>{% block title %}Sprouts Box | Lush &amp; Healthy{% endblock %}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="/static/css/style.css">
-    <!-- Icons (Feather Icons or similar lightweight) -->
+    <!-- Icons (Feather Icons) -->
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
@@ -18,30 +18,22 @@
     <header class="navbar">
         <div class="nav-container">
             <a href="{% url 'store:home' %}" class="brand-logo">
-                <img src="/static/images/logo.png" alt="Sprouts Box Logo" onerror="this.src='https://placehold.co/150x50?text=Sprouts+Box'">
+                <img src="/static/plugin/images/logo.png" alt="Sprouts Box Logo" onerror="this.src='https://placehold.co/180x60/1B4332/FFFFFF?text=Sprouts+Box'">
             </a>
             
             <nav class="nav-links">
-<<<<<<< Updated upstream
-                <a href="{% url 'store:home' %}" class="active">Home</a>
-                <a href="#">Shop</a>
-                <a href="#">About Us</a>
-                <a href="#">Sustainability</a>
-                <a href="#">Contact</a>
-=======
                 <a href="{% url 'store:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
                 <a href="{% url 'store:shop' %}" class="nav-item {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
                 <a href="{% url 'store:about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a>
                 <a href="#" class="nav-item">Sustainability</a>
                 <a href="{% url 'store:contact' %}" class="nav-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
->>>>>>> Stashed changes
             </nav>
 
             <div class="nav-actions">
-                <a href="#" class="icon-link"><i data-feather="search"></i></a>
-                <a href="#" class="icon-link"><i data-feather="user"></i></a>
-                <a href="#" class="icon-link cart-icon">
-                    <i data-feather="shopping-cart"></i>
+                <a href="#" class="icon-link" title="Search"><i data-feather="search"></i></a>
+                <a href="#" class="icon-link" title="Account"><i data-feather="user"></i></a>
+                <a href="#" class="icon-link cart-icon" title="Shopping Cart">
+                    <i data-feather="shopping-bag"></i>
                     <span class="cart-count">0</span>
                 </a>
                 <button class="mobile-menu-btn"><i data-feather="menu"></i></button>
@@ -59,45 +51,41 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-brand">
-                <img src="/static/images/logo-white.png" alt="Sprouts Box Logo" onerror="this.src='https://placehold.co/150x50/1B4332/FFFFFF?text=Sprouts+Box'">
+                <div class="footer-logo-wrap">
+                    <img src="/static/plugin/images/logo.png" alt="Sprouts Box Logo" class="footer-logo" onerror="this.src='https://placehold.co/150x50/1B4332/FFFFFF?text=Sprouts+Box'">
+                </div>
                 <p>Fresh produce. Healthy living.<br>A sustainable future.</p>
             </div>
             
-            <div class="footer-links">
+            <div class="footer-column">
                 <h4>Quick Links</h4>
                 <a href="{% url 'store:home' %}">Home</a>
-<<<<<<< Updated upstream
-                <a href="#">Shop</a>
-                <a href="#">About Us</a>
-                <a href="#">Contact</a>
-=======
                 <a href="{% url 'store:shop' %}">Shop</a>
                 <a href="{% url 'store:about' %}">About Us</a>
                 <a href="{% url 'store:contact' %}">Contact</a>
->>>>>>> Stashed changes
             </div>
 
-            <div class="footer-contact">
+            <div class="footer-column">
                 <h4>Contact Us</h4>
                 <p><i data-feather="phone"></i> +91 98765 43210</p>
                 <p><i data-feather="mail"></i> hello@sproutsbox.in</p>
                 <p><i data-feather="map-pin"></i> Kerala, India</p>
             </div>
 
-            <div class="footer-social">
+            <div class="footer-column">
                 <h4>Follow Us</h4>
                 <div class="social-icons">
                     <a href="#"><i data-feather="instagram"></i></a>
                     <a href="#"><i data-feather="facebook"></i></a>
                     <a href="#"><i data-feather="youtube"></i></a>
-                    <a href="#"><i data-feather="twitter"></i></a>
+                    <a href="#"><i data-feather="message-circle"></i></a>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Sprouts Box. All rights reserved.</p>
+            <p>&copy; 2025 Sprouts Box. All rights reserved.</p>
             <div class="footer-legal">
-                <a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a>
+                <a href="#">Privacy Policy</a> | <a href="#">Terms &amp; Conditions</a>
             </div>
         </div>
     </footer>

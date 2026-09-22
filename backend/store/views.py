@@ -3,7 +3,6 @@ from .models import Category, Product
 
 def home(request):
     categories = Category.objects.all()
-    # Fetch some sample featured products if any exist
     featured_products = Product.objects.filter(is_available=True)[:5]
     
     context = {
@@ -11,8 +10,6 @@ def home(request):
         'featured_products': featured_products,
     }
     return render(request, 'home.html', context)
-<<<<<<< Updated upstream
-=======
 
 
 def shop(request):
@@ -74,6 +71,3 @@ def contact(request):
         success_message = f"Thank you, {name}! Your message has been received. We will get back to you shortly."
     
     return render(request, 'contact.html', {'success_message': success_message})
-
-
->>>>>>> Stashed changes
