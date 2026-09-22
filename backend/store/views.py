@@ -55,3 +55,19 @@ def shop(request):
     }
     return render(request, 'shop.html', context)
 
+
+def about(request):
+    return render(request, 'about.html')
+
+
+def contact(request):
+    success_message = None
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        # Process message or store in DB/send email
+        success_message = f"Thank you, {name}! Your message has been received. We will get back to you shortly."
+    
+    return render(request, 'contact.html', {'success_message': success_message})
