@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us | Sprouts Box{% endblock %}
+
+{% block content %}
+<!-- Contact Hero Banner -->
+<section class="page-hero">
+    <div class="page-hero-content">
+        <span class="section-subtitle"><i data-feather="mail"></i> Get in Touch</span>
+        <h1 class="page-title">We'd Love to Hear From You</h1>
+        <p class="page-subtitle">Have questions about our organic produce, delivery schedules, or farm partnerships? Reach out to us anytime.</p>
+    </div>
+</section>
+
+<!-- Contact Main Section -->
+<section class="contact-section">
+    <div class="contact-container">
+        <!-- Contact Info Cards Column -->
+        <div class="contact-info-column">
+            <span class="section-subtitle"><i data-feather="map-pin"></i> Reach Out &mdash;</span>
+            <h2 class="section-title">Contact Information</h2>
+            <p class="contact-intro">Whether you're looking for home delivery or want to partner with us, our team is ready to assist you.</p>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-icon"><i data-feather="phone-call"></i></div>
+                    <div>
+                        <h4>Phone Number</h4>
+                        <p>+91 98765 43210</p>
+                        <p class="info-sub">Mon &ndash; Sat: 8:00 AM &ndash; 8:00 PM</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i data-feather="mail"></i></div>
+                    <div>
+                        <h4>Email Address</h4>
+                        <p>hello@sproutsbox.in</p>
+                        <p class="info-sub">Support &amp; General Inquiries</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i data-feather="map-pin"></i></div>
+                    <div>
+                        <h4>Farm Headquarters</h4>
+                        <p>Sprouts Box Eco Farm, Green Valley</p>
+                        <p class="info-sub">Kerala, India &ndash; 682001</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-social-wrap">
+                <h4>Follow Our Farm Journey</h4>
+                <div class="social-icons contact-socials">
+                    <a href="#"><i data-feather="instagram"></i></a>
+                    <a href="#"><i data-feather="facebook"></i></a>
+                    <a href="#"><i data-feather="youtube"></i></a>
+                    <a href="#"><i data-feather="message-circle"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form Column -->
+        <div class="contact-form-column">
+            {% if success_message %}
+                <div class="alert-success">
+                    <i data-feather="check-circle"></i>
+                    <span>{{ success_message }}</span>
+                </div>
+            {% endif %}
+
+            <div class="form-card">
+                <h3>Send Us a Message</h3>
+                <p>Fill out the form below and we will get back to you within 24 hours.</p>
+
+                <form method="POST" action="{% url 'store:contact' %}" class="contact-form">
+                    {% csrf_token %}
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="name">Your Name *</label>
+                            <input type="text" id="name" name="name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required placeholder="john@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <input type="text" id="subject" name="subject" required placeholder="e.g. Order Inquiry / Bulk Order">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="5" required placeholder="Tell us how we can help you..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary submit-btn">
+                        Send Message <i data-feather="send"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
