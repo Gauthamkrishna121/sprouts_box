@@ -1,94 +1,239 @@
-/* Override default Django Admin CSS variables with our earthy green theme */
+/* Sprouts Box Custom Admin Theme */
 :root {
-    --primary: #1a4332;
+    --primary: #1b4332;
     --secondary: #2d6a4f;
-    --accent: #1b4332;
-    --primary-fg: #fff;
-
-    --body-fg: #2c3e50;
+    --dark: #0b2316;
+    --accent-light: #e8f3ec;
+    --border-color: #ece8df;
+    
+    --body-fg: #132a1c;
     --body-bg: #fbf9f2;
     --body-quiet-color: #5a6c7d;
-    --body-loud-color: #1a4332;
+    --body-loud-color: #1b4332;
 
-    --header-color: #fff;
-    --header-branding-color: #fff;
-    --header-bg: #1a4332;
-    --header-link-color: #ffffff;
+    --header-bg: #0b2316;
+    --header-color: #ffffff;
+    --header-link-color: #e8f3ec;
 
-    --breadcrumbs-fg: #e6f2e8;
+    --breadcrumbs-bg: #1b4332;
+    --breadcrumbs-fg: #ffffff;
     --breadcrumbs-link-fg: #ffffff;
-    --breadcrumbs-bg: #2d6a4f;
 
-    --link-fg: #2d6a4f;
-    --link-hover-color: #1a4332;
-    --link-selected-fg: #1a4332;
+    --link-fg: #1b4332;
+    --link-hover-color: #2d6a4f;
+    --link-selected-fg: #1b4332;
 
-    --hairline-color: #e6f2e8;
-    --border-color: #d8f3dc;
+    --hairline-color: #ece8df;
+    --selected-bg: #e8f3ec;
+    --selected-row: #e8f3ec;
 
-    --error-fg: #e74c3c;
-    --message-success-bg: #d8f3dc;
-    --message-warning-bg: #ffffe0;
-    --message-error-bg: #ffbaba;
-
-    --darkened-bg: #f0f5f1; 
-    --selected-bg: #e6f2e8; 
-    --selected-row: #e6f2e8;
-
-    --button-fg: #fff;
-    --button-bg: #2d6a4f;
-    --button-hover-bg: #1a4332;
-    --default-button-bg: #1a4332;
-    --default-button-hover-bg: #143d2c;
-    --close-button-bg: #5a6c7d;
-    --close-button-hover-bg: #2c3e50;
-    --delete-button-bg: #ba2121;
-    --delete-button-hover-bg: #a41515;
-
-    --object-tools-fg: #fff;
-    --object-tools-bg: #2d6a4f;
-    --object-tools-hover-bg: #1a4332;
+    --button-fg: #ffffff;
+    --button-bg: #1b4332;
+    --button-hover-bg: #2d6a4f;
+    --default-button-bg: #1b4332;
+    --default-button-hover-bg: #2d6a4f;
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-#header {
-    padding: 15px 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-#branding h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    font-size: 1.5rem;
-}
-
-#branding h1 a, #branding h1 a:link, #branding h1 a:visited {
-    color: var(--header-branding-color) !important;
-}
-
-div.breadcrumbs {
-    padding: 12px 20px;
-    font-size: 0.9rem;
-}
-
-.module h2, .module caption, .inline-group h2 {
-    background: var(--primary);
-    color: var(--primary-fg);
     font-family: 'Inter', sans-serif;
+    background-color: var(--body-bg);
+    color: var(--body-fg);
+}
+
+/* Admin Header Branding */
+#header {
+    background: var(--header-bg);
+    padding: 12px 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-branding-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none !important;
+}
+
+.admin-logo-img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.admin-title-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.live-site-badge {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff !important;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.live-site-badge:hover {
+    background-color: #1b4332;
+    border-color: #1b4332;
+    transform: translateY(-1px);
+}
+
+#user-tools {
+    font-size: 0.85rem;
     font-weight: 500;
 }
 
-a:link, a:visited {
-    font-weight: 500;
+#user-tools a {
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-decoration: none;
 }
 
-/* Custom Sidebar Styles */
+#user-tools a:hover {
+    color: #ffffff !important;
+    text-decoration: underline;
+}
+
+/* Breadcrumbs Bar */
+div.breadcrumbs {
+    background: var(--breadcrumbs-bg);
+    padding: 12px 24px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+}
+
+div.breadcrumbs a {
+    color: #ffffff !important;
+}
+
+/* Main Content & Modules */
+#content {
+    padding: 25px 30px;
+}
+
+.module {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    margin-bottom: 25px;
+}
+
+.module h2, .module caption {
+    background: var(--primary);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 12px 18px;
+    letter-spacing: 0.3px;
+}
+
+/* Tables & Change Lists */
+#changelist {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+#changelist table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#changelist table thead th {
+    background: #f7f5ee;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border-color);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+#changelist table tbody td, #changelist table tbody th {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--hairline-color);
+    vertical-align: middle;
+}
+
+#changelist table tbody tr:hover {
+    background-color: var(--selected-bg);
+}
+
+/* Action Buttons & Tools */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 8px rgba(27, 67, 50, 0.2) !important;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+    background: var(--secondary) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.3) !important;
+}
+
+.deletelink, .deletelink-box a {
+    background: #dc3545 !important;
+}
+
+.deletelink:hover, .deletelink-box a:hover {
+    background: #bd2130 !important;
+}
+
+/* Form Controls & Inputs */
+input[type=text], input[type=password], input[type=email], input[type=number], input[type=url], textarea, select {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 9px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    background-color: #ffffff;
+}
+
+input[type=text]:focus, textarea:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.12);
+}
+
+/* Custom Sidebar Styling */
 .custom-sidebar {
-    padding: 20px 15px;
+    padding: 20px 14px;
 }
 
 .sidebar-section {
@@ -97,22 +242,17 @@ a:link, a:visited {
 
 .sidebar-section h3 {
     font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: var(--primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 12px;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.sidebar-section h3 img {
-    width: 16px;
-    opacity: 0.8;
 }
 
 .sidebar-menu {
@@ -122,100 +262,107 @@ a:link, a:visited {
 }
 
 .sidebar-menu li {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .sidebar-menu a {
     display: block;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 9px 12px;
+    border-radius: 8px;
     color: var(--body-fg);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    font-weight: 500;
     transition: all 0.2s ease;
 }
 
 .sidebar-menu a:hover {
     background-color: var(--selected-bg);
     color: var(--primary);
-    transform: translateX(3px);
+    transform: translateX(4px);
 }
 
-/* Custom Dashboard Landing Page */
+/* Custom Dashboard Layout */
 .custom-dashboard {
-    padding: 10px;
+    padding: 5px;
 }
 
 .dashboard-welcome {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    background: linear-gradient(135deg, #1b4332 0%, #0d2b1d 100%);
     color: white;
-    padding: 30px;
-    border-radius: 12px;
+    padding: 30px 35px;
+    border-radius: 16px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .dashboard-welcome h2 {
     color: white !important;
     font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
+    font-size: 2rem;
+    margin-bottom: 8px;
     background: none !important;
 }
 
 .dashboard-welcome p {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     opacity: 0.9;
     margin: 0;
 }
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
 }
 
 .dashboard-card {
     background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-color: rgba(27, 67, 50, 0.2);
 }
 
 .dashboard-card h3 {
     font-family: 'Inter', sans-serif;
     color: var(--primary);
     font-size: 1.2rem;
-    margin-bottom: 15px;
-    border-bottom: 2px solid var(--selected-bg);
-    padding-bottom: 10px;
+    margin-bottom: 12px;
+    font-weight: 700;
 }
 
 .dashboard-card p {
     color: var(--body-quiet-color);
     flex-grow: 1;
-    margin-bottom: 25px;
-    line-height: 1.5;
+    margin-bottom: 22px;
+    font-size: 0.92rem;
+    line-height: 1.55;
 }
 
 .card-actions {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
 .btn-dashboard {
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
     text-decoration: none !important;
-    font-weight: 500;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.88rem;
     transition: all 0.2s ease;
     text-align: center;
-    flex-grow: 1;
+    flex: 1;
 }
 
 .btn-dashboard.primary {
@@ -225,12 +372,13 @@ a:link, a:visited {
 
 .btn-dashboard.primary:hover {
     background-color: var(--secondary);
-    box-shadow: 0 2px 8px rgba(45, 106, 79, 0.4);
+    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.25);
 }
 
 .btn-dashboard.secondary {
     background-color: var(--selected-bg);
     color: var(--primary) !important;
+    border: 1px solid var(--border-color);
 }
 
 .btn-dashboard.secondary:hover {
