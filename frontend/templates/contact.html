@@ -17,17 +17,17 @@
     <div class="contact-container">
         <!-- Contact Info Cards Column -->
         <div class="contact-info-column">
-            <span class="section-subtitle"><i data-feather="map-pin"></i> Reach Out &mdash;</span>
-            <h2 class="section-title">Contact Information</h2>
-            <p class="contact-intro">Whether you're looking for home delivery or want to partner with us, our team is ready to assist you.</p>
+            <span class="section-subtitle"><i data-feather="map-pin"></i> {{ site_settings.contact_subtitle|default:"Reach Out —" }}</span>
+            <h2 class="section-title">{{ site_settings.contact_title|default:"Contact Information" }}</h2>
+            <p class="contact-intro">{{ site_settings.contact_intro|default:"Whether you're looking for home delivery or want to partner with us, our team is ready to assist you." }}</p>
 
             <div class="info-cards">
                 <div class="info-card">
                     <div class="info-icon"><i data-feather="phone-call"></i></div>
                     <div>
                         <h4>Phone Number</h4>
-                        <p>+91 98765 43210</p>
-                        <p class="info-sub">Mon &ndash; Sat: 8:00 AM &ndash; 8:00 PM</p>
+                        <p>{{ site_settings.phone_number|default:"+91 98765 43210" }}</p>
+                        <p class="info-sub">{{ site_settings.phone_hours|default:"Mon – Sat: 8:00 AM – 8:00 PM" }}</p>
                     </div>
                 </div>
 
@@ -35,8 +35,8 @@
                     <div class="info-icon"><i data-feather="mail"></i></div>
                     <div>
                         <h4>Email Address</h4>
-                        <p>hello@sproutsbox.in</p>
-                        <p class="info-sub">Support &amp; General Inquiries</p>
+                        <p>{{ site_settings.email_address|default:"hello@sproutsbox.in" }}</p>
+                        <p class="info-sub">{{ site_settings.email_note|default:"Support & General Inquiries" }}</p>
                     </div>
                 </div>
 
@@ -44,8 +44,8 @@
                     <div class="info-icon"><i data-feather="map-pin"></i></div>
                     <div>
                         <h4>Farm Headquarters</h4>
-                        <p>Sprouts Box Eco Farm, Green Valley</p>
-                        <p class="info-sub">Kerala, India &ndash; 682001</p>
+                        <p>{{ site_settings.address_line1|default:"Sprouts Box Eco Farm, Green Valley" }}</p>
+                        <p class="info-sub">{{ site_settings.address_line2|default:"Kerala, India – 682001" }}</p>
                     </div>
                 </div>
             </div>
@@ -53,10 +53,10 @@
             <div class="contact-social-wrap">
                 <h4>Follow Our Farm Journey</h4>
                 <div class="social-icons contact-socials">
-                    <a href="#"><i data-feather="instagram"></i></a>
-                    <a href="#"><i data-feather="facebook"></i></a>
-                    <a href="#"><i data-feather="youtube"></i></a>
-                    <a href="#"><i data-feather="message-circle"></i></a>
+                    {% if site_settings.instagram_url %}<a href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener"><i data-feather="instagram"></i></a>{% endif %}
+                    {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}" target="_blank" rel="noopener"><i data-feather="facebook"></i></a>{% endif %}
+                    {% if site_settings.youtube_url %}<a href="{{ site_settings.youtube_url }}" target="_blank" rel="noopener"><i data-feather="youtube"></i></a>{% endif %}
+                    {% if site_settings.whatsapp_url %}<a href="{{ site_settings.whatsapp_url }}" target="_blank" rel="noopener"><i data-feather="message-circle"></i></a>{% endif %}
                 </div>
             </div>
         </div>

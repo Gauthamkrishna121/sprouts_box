@@ -10,80 +10,291 @@
 {% block nav-breadcrumbs %}{% endblock %}
 
 {% block content %}
-<div id="content-main" class="custom-dashboard">
-    <div class="dashboard-welcome">
-        <h2>Welcome to the Lush &amp; Healthy Control Center! 🌿</h2>
-        <p>Manage your farm-fresh catalog, customize categories, monitor store activity, and quickly add or delete products with full control.</p>
-    </div>
-
-    <div class="dashboard-grid">
-        <!-- Products Management Card -->
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <h3>🛍️ Farm Products</h3>
-            </div>
-            <p>Add new items, update pricing, manage stock status, and delete out-of-stock or discontinued items.</p>
-            <div class="card-actions-stack">
-                <div class="card-actions-row">
-                    <a href="{% url 'admin:store_product_add' %}" class="btn-dashboard primary">+ Add Product</a>
-                    <a href="{% url 'admin:store_product_changelist' %}" class="btn-dashboard secondary">View All</a>
-                </div>
-                <a href="{% url 'admin:store_product_changelist' %}" class="btn-dashboard danger-subtle">
-                    <span>🗑️</span> Manage &amp; Delete Products
-                </a>
-            </div>
+<div id="content-main" class="modern-dashboard">
+    <!-- Welcome Hero Banner -->
+    <div class="dashboard-hero">
+        <div class="hero-text-side">
+            <span class="hero-badge">🌿 Sprouts Box &bull; Control Center</span>
+            <h1 class="hero-title">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p class="hero-subtitle">Monitor live store inventory, customize farm produce, update site contact details, and manage customer experience.</p>
         </div>
-
-        <!-- Categories Management Card -->
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <h3>📁 Product Categories</h3>
-            </div>
-            <p>Organize your fresh harvest into categories (Vegetables, Fruits, Combos), adjust slugs, or remove unused categories.</p>
-            <div class="card-actions-stack">
-                <div class="card-actions-row">
-                    <a href="{% url 'admin:store_category_add' %}" class="btn-dashboard primary">+ Add Category</a>
-                    <a href="{% url 'admin:store_category_changelist' %}" class="btn-dashboard secondary">View All</a>
-                </div>
-                <a href="{% url 'admin:store_category_changelist' %}" class="btn-dashboard danger-subtle">
-                    <span>🗑️</span> Manage &amp; Delete Categories
-                </a>
-            </div>
-        </div>
-        
-        <!-- User & Access Management Card -->
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <h3>👥 Accounts &amp; Access</h3>
-            </div>
-            <p>Manage store administrators, staff permissions, and customer authentication records.</p>
-            <div class="card-actions-stack">
-                <div class="card-actions-row">
-                    <a href="{% url 'admin:auth_user_changelist' %}" class="btn-dashboard secondary">Manage Users</a>
-                    <a href="{% url 'admin:auth_group_changelist' %}" class="btn-dashboard secondary">User Groups</a>
-                </div>
-                <a href="{% url 'store:home' %}" target="_blank" class="btn-dashboard primary">
-                    <span>🌐</span> Preview Live Store
-                </a>
-            </div>
+        <div class="hero-actions-side">
+            <a href="{% url 'admin:store_product_add' %}" class="btn-hero primary">
+                <span class="btn-icon">+</span>
+                <span>Add Product</span>
+            </a>
+            <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-hero secondary">
+                <span class="btn-icon">⚙️</span>
+                <span>Site Customization</span>
+            </a>
+            <a href="{% url 'store:home' %}" target="_blank" class="btn-hero ghost">
+                <span>View Storefront</span>
+                <span class="btn-icon">↗</span>
+            </a>
         </div>
     </div>
 
-    <!-- How to Delete & Manage Items Tip Box -->
-    <div class="dashboard-tips-box">
-        <h4>💡 Quick Guide: How to Delete Products or Categories</h4>
-        <div class="dashboard-tips-grid">
-            <div class="tip-item">
-                <strong>1. One-Click Row Delete</strong>
-                Open any product or category list and click the red <b>🗑️ Delete</b> button right in the table row.
+    <!-- Live Store Metrics Bar -->
+    <div class="metrics-grid">
+        <!-- Total Products Metric -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">TOTAL PRODUCTS</span>
+                <span class="metric-icon-wrap bg-emerald">🛍️</span>
             </div>
-            <div class="tip-item">
-                <strong>2. Bulk Deletion</strong>
-                Select checkboxes next to multiple items, choose <i>"Delete selected"</i> from the action dropdown, and click <b>Go</b>.
+            <div class="metric-body">
+                <div class="metric-value">{{ admin_stats.total_products|default:"0" }}</div>
+                <div class="metric-subtext">Items listed in store</div>
             </div>
-            <div class="tip-item">
-                <strong>3. Inside Edit View</strong>
-                Click on any product or category to edit, then click the red <b>Delete</b> button at the bottom of the form.
+            <div class="metric-footer">
+                <a href="{% url 'admin:store_product_changelist' %}" class="metric-link">View all products &rarr;</a>
+            </div>
+        </div>
+
+        <!-- In-Stock Items Metric -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">IN STOCK &amp; READY</span>
+                <span class="metric-icon-wrap bg-green">
+                    <span class="pulse-ring"></span>
+                    🌱
+                </span>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value text-green">{{ admin_stats.in_stock_products|default:"0" }}</div>
+                <div class="metric-subtext">Available for customers</div>
+            </div>
+            <div class="metric-footer">
+                <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=1" class="metric-link text-green">Filter in-stock &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Out of Stock Alert Metric -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">OUT OF STOCK</span>
+                <span class="metric-icon-wrap bg-amber">⚠️</span>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value {% if admin_stats.out_of_stock_products > 0 %}text-amber{% else %}text-muted{% endif %}">
+                    {{ admin_stats.out_of_stock_products|default:"0" }}
+                </div>
+                <div class="metric-subtext">Items needing restock</div>
+            </div>
+            <div class="metric-footer">
+                <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="metric-link text-amber">Manage inventory &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Categories Metric -->
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-title">PRODUCT CATEGORIES</span>
+                <span class="metric-icon-wrap bg-blue">📁</span>
+            </div>
+            <div class="metric-body">
+                <div class="metric-value">{{ admin_stats.total_categories|default:"0" }}</div>
+                <div class="metric-subtext">Organized collections</div>
+            </div>
+            <div class="metric-footer">
+                <a href="{% url 'admin:store_category_changelist' %}" class="metric-link">Manage categories &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Row: Recent Products & Management Cards -->
+    <div class="dashboard-columns">
+        <!-- Left Side: Recent Products Table + Quick Management -->
+        <div class="dashboard-left-col">
+            <!-- Recent Products Preview Card -->
+            <div class="content-card">
+                <div class="content-card-header">
+                    <div class="card-header-left">
+                        <span class="card-header-icon">🌿</span>
+                        <div>
+                            <h3 class="card-header-title">Recently Added Produce</h3>
+                            <p class="card-header-subtitle">Quick overview of recent farm inventory</p>
+                        </div>
+                    </div>
+                    <div class="card-header-actions">
+                        <a href="{% url 'admin:store_product_add' %}" class="btn-table-header">+ Add Product</a>
+                        <a href="{% url 'admin:store_product_changelist' %}" class="btn-table-header secondary">View All</a>
+                    </div>
+                </div>
+
+                <div class="card-table-wrapper">
+                    {% if admin_stats.recent_products %}
+                    <table class="modern-dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Unit</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in admin_stats.recent_products %}
+                            <tr>
+                                <td>
+                                    <div class="table-product-cell">
+                                        {% if product.image %}
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-mini-thumb">
+                                        {% else %}
+                                            <div class="product-mini-thumb placeholder">🌱</div>
+                                        {% endif %}
+                                        <div class="product-info-wrap">
+                                            <span class="product-name-txt">{{ product.name }}</span>
+                                            <span class="product-slug-txt">{{ product.slug }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="category-pill">{{ product.category.name }}</span>
+                                </td>
+                                <td>
+                                    <span class="table-price">₹{{ product.price }}</span>
+                                </td>
+                                <td>
+                                    <span class="table-unit">{{ product.unit }}</span>
+                                </td>
+                                <td>
+                                    {% if product.is_available %}
+                                        <span class="status-pill in-stock">
+                                            <span class="status-dot green"></span> In Stock
+                                        </span>
+                                    {% else %}
+                                        <span class="status-pill out-of-stock">
+                                            <span class="status-dot red"></span> Out of Stock
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: right;">
+                                    <a href="{% url 'admin:store_product_change' product.pk %}" class="btn-row-edit" title="Edit Product">
+                                        ✏️ Edit
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state-box">
+                        <div class="empty-icon">🌱</div>
+                        <h4>No products listed yet</h4>
+                        <p>Get started by adding your first fresh organic product to the store!</p>
+                        <a href="{% url 'admin:store_product_add' %}" class="btn-hero primary">+ Add First Product</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Access Management Grid -->
+            <div class="quick-cards-grid">
+                <!-- Products Card -->
+                <div class="action-card">
+                    <div class="action-card-top">
+                        <span class="action-card-emoji">🛍️</span>
+                        <div>
+                            <h4>Products Catalog</h4>
+                            <p>Add new harvests, update prices, change inventory status.</p>
+                        </div>
+                    </div>
+                    <div class="action-card-btns">
+                        <a href="{% url 'admin:store_product_add' %}" class="btn-action primary">+ Add Product</a>
+                        <a href="{% url 'admin:store_product_changelist' %}" class="btn-action secondary">Manage All</a>
+                    </div>
+                </div>
+
+                <!-- Categories Card -->
+                <div class="action-card">
+                    <div class="action-card-top">
+                        <span class="action-card-emoji">📁</span>
+                        <div>
+                            <h4>Produce Categories</h4>
+                            <p>Group produce into Microgreens, Sprouts, Veggies, Combos.</p>
+                        </div>
+                    </div>
+                    <div class="action-card-btns">
+                        <a href="{% url 'admin:store_category_add' %}" class="btn-action primary">+ Add Category</a>
+                        <a href="{% url 'admin:store_category_changelist' %}" class="btn-action secondary">Manage All</a>
+                    </div>
+                </div>
+
+                <!-- Site Settings Card -->
+                <div class="action-card highlight-card">
+                    <div class="action-card-top">
+                        <span class="action-card-emoji">⚙️</span>
+                        <div>
+                            <h4>Site Customization</h4>
+                            <p>Update phone numbers, email, farm location &amp; social links.</p>
+                        </div>
+                    </div>
+                    <div class="action-card-btns">
+                        <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-action highlight">✏️ Edit Settings &amp; Info</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Store Summary & Active Contact Info -->
+        <div class="dashboard-right-col">
+            <!-- Site Contact Quick Card -->
+            <div class="content-card sidebar-widget">
+                <div class="widget-header">
+                    <span class="widget-icon">📞</span>
+                    <h4>Current Contact Info</h4>
+                </div>
+                <div class="widget-content">
+                    <div class="contact-preview-row">
+                        <span class="label">Phone:</span>
+                        <span class="value">{{ site_settings.phone_number|default:"+91 98765 43210" }}</span>
+                    </div>
+                    <div class="contact-preview-row">
+                        <span class="label">Hours:</span>
+                        <span class="value-sub">{{ site_settings.phone_hours|default:"Mon – Sat: 8:00 AM – 8:00 PM" }}</span>
+                    </div>
+                    <div class="contact-preview-row">
+                        <span class="label">Email:</span>
+                        <span class="value">{{ site_settings.email_address|default:"hello@sproutsbox.in" }}</span>
+                    </div>
+                    <div class="contact-preview-row">
+                        <span class="label">Location:</span>
+                        <span class="value-sub">{{ site_settings.address_line1|default:"Sprouts Box Eco Farm" }}<br>{{ site_settings.address_line2|default:"Kerala, India" }}</span>
+                    </div>
+                    <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-widget-action">
+                        <span>✏️ Update Details</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Categories Overview Widget -->
+            <div class="content-card sidebar-widget">
+                <div class="widget-header">
+                    <span class="widget-icon">🏷️</span>
+                    <h4>Active Categories</h4>
+                </div>
+                <div class="widget-content">
+                    {% if admin_stats.categories_list %}
+                    <ul class="widget-category-list">
+                        {% for cat in admin_stats.categories_list %}
+                        <li>
+                            <a href="{% url 'admin:store_product_changelist' %}?category__id__exact={{ cat.pk }}" class="widget-cat-item">
+                                <span class="cat-name">{{ cat.name }}</span>
+                                <span class="cat-count">{{ cat.num_products }} items</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="empty-text">No categories created yet.</p>
+                    {% endif %}
+                    <a href="{% url 'admin:store_category_add' %}" class="btn-widget-action secondary">
+                        <span>+ Add Category</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -91,34 +302,40 @@
 {% endblock %}
 
 {% block sidebar %}
-<div id="content-related">
+<div id="content-related" class="modern-recent-actions">
     <div class="module" id="recent-actions-module">
-        <h2>{% translate 'Recent actions' %}</h2>
-        <h3>{% translate 'My actions' %}</h3>
-            {% load log %}
-            {% get_admin_log 10 as admin_log for_user user %}
-            {% if not admin_log %}
-            <p style="padding: 12px 18px; color: var(--body-quiet-color);">{% translate 'None available' %}</p>
-            {% else %}
-            <ul class="actionlist">
-            {% for entry in admin_log %}
-            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
-                <span class="visually-hidden">{% if entry.is_addition %}{% translate 'Added:' %}{% elif entry.is_change %}{% translate 'Changed:' %}{% elif entry.is_deletion %}{% translate 'Deleted:' %}{% endif %}</span>
-                {% if entry.is_deletion or not entry.get_admin_url %}
-                    {{ entry.object_repr }}
-                {% else %}
-                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                {% endif %}
-                <br>
-                {% if entry.content_type %}
-                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
-                {% else %}
-                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
-                {% endif %}
-            </li>
-            {% endfor %}
-            </ul>
-            {% endif %}
+        <div class="recent-actions-header">
+            <h3>⚡ {% translate 'Recent Activities' %}</h3>
+        </div>
+        {% load log %}
+        {% get_admin_log 8 as admin_log for_user user %}
+        {% if not admin_log %}
+        <p style="padding: 16px 20px; color: #64748b; font-size: 0.88rem;">{% translate 'No recent activity records.' %}</p>
+        {% else %}
+        <ul class="actionlist modern-actionlist">
+        {% for entry in admin_log %}
+        <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+            <div class="action-item-wrap">
+                <span class="action-type-tag {% if entry.is_addition %}tag-add{% elif entry.is_change %}tag-edit{% elif entry.is_deletion %}tag-delete{% endif %}">
+                    {% if entry.is_addition %}ADD{% elif entry.is_change %}EDIT{% elif entry.is_deletion %}DEL{% endif %}
+                </span>
+                <div class="action-item-content">
+                    {% if entry.is_deletion or not entry.get_admin_url %}
+                        <span class="action-item-title">{{ entry.object_repr }}</span>
+                    {% else %}
+                        <a href="{{ entry.get_admin_url }}" class="action-item-link">{{ entry.object_repr }}</a>
+                    {% endif %}
+                    <span class="action-item-meta">
+                        {% if entry.content_type %}
+                            {{ entry.content_type.name|capfirst }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

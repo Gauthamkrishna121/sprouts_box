@@ -67,18 +67,18 @@
 
             <div class="footer-column">
                 <h4>Contact Us</h4>
-                <p><i data-feather="phone"></i> +91 98765 43210</p>
-                <p><i data-feather="mail"></i> hello@sproutsbox.in</p>
-                <p><i data-feather="map-pin"></i> Kerala, India</p>
+                <p><i data-feather="phone"></i> {{ site_settings.phone_number|default:"+91 98765 43210" }}</p>
+                <p><i data-feather="mail"></i> {{ site_settings.email_address|default:"hello@sproutsbox.in" }}</p>
+                <p><i data-feather="map-pin"></i> {{ site_settings.address_line2|default:"Kerala, India" }}</p>
             </div>
 
             <div class="footer-column">
                 <h4>Follow Us</h4>
                 <div class="social-icons">
-                    <a href="#"><i data-feather="instagram"></i></a>
-                    <a href="#"><i data-feather="facebook"></i></a>
-                    <a href="#"><i data-feather="youtube"></i></a>
-                    <a href="#"><i data-feather="message-circle"></i></a>
+                    {% if site_settings.instagram_url %}<a href="{{ site_settings.instagram_url }}" target="_blank" rel="noopener"><i data-feather="instagram"></i></a>{% endif %}
+                    {% if site_settings.facebook_url %}<a href="{{ site_settings.facebook_url }}" target="_blank" rel="noopener"><i data-feather="facebook"></i></a>{% endif %}
+                    {% if site_settings.youtube_url %}<a href="{{ site_settings.youtube_url }}" target="_blank" rel="noopener"><i data-feather="youtube"></i></a>{% endif %}
+                    {% if site_settings.whatsapp_url %}<a href="{{ site_settings.whatsapp_url }}" target="_blank" rel="noopener"><i data-feather="message-circle"></i></a>{% endif %}
                 </div>
             </div>
         </div>
