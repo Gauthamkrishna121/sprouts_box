@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static admin_filters %}
+{% load i18n static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}" {% csp_nonce_attr %}>{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
 
 {% block coltype %}colMS{% endblock %}
 
@@ -12,34 +12,78 @@
 {% block content %}
 <div id="content-main" class="custom-dashboard">
     <div class="dashboard-welcome">
-        <h2>Welcome to the Lush & Healthy Dashboard! 🌿</h2>
-        <p>This is your control center. From here, you can easily manage your farm-fresh products, organize categories, and oversee your store.</p>
+        <h2>Welcome to the Lush &amp; Healthy Control Center! 🌿</h2>
+        <p>Manage your farm-fresh catalog, customize categories, monitor store activity, and quickly add or delete products with full control.</p>
     </div>
 
     <div class="dashboard-grid">
+        <!-- Products Management Card -->
         <div class="dashboard-card">
-            <h3>🛍️ Manage Products</h3>
-            <p>Add new items, update prices, and upload product images to display on the live website.</p>
-            <div class="card-actions">
-                <a href="{% url 'admin:store_product_add' %}" class="btn-dashboard primary">+ Add New Product</a>
-                <a href="{% url 'admin:store_product_changelist' %}" class="btn-dashboard secondary">View All Products</a>
+            <div class="dashboard-card-header">
+                <h3>🛍️ Farm Products</h3>
+            </div>
+            <p>Add new items, update pricing, manage stock status, and delete out-of-stock or discontinued items.</p>
+            <div class="card-actions-stack">
+                <div class="card-actions-row">
+                    <a href="{% url 'admin:store_product_add' %}" class="btn-dashboard primary">+ Add Product</a>
+                    <a href="{% url 'admin:store_product_changelist' %}" class="btn-dashboard secondary">View All</a>
+                </div>
+                <a href="{% url 'admin:store_product_changelist' %}" class="btn-dashboard danger-subtle">
+                    <span>🗑️</span> Manage &amp; Delete Products
+                </a>
             </div>
         </div>
 
+        <!-- Categories Management Card -->
         <div class="dashboard-card">
-            <h3>📁 Categories</h3>
-            <p>Organize your products into logical categories (e.g., Vegetables, Fruits) to help customers browse easily.</p>
-            <div class="card-actions">
-                <a href="{% url 'admin:store_category_add' %}" class="btn-dashboard primary">+ Add Category</a>
-                <a href="{% url 'admin:store_category_changelist' %}" class="btn-dashboard secondary">Manage Categories</a>
+            <div class="dashboard-card-header">
+                <h3>📁 Product Categories</h3>
+            </div>
+            <p>Organize your fresh harvest into categories (Vegetables, Fruits, Combos), adjust slugs, or remove unused categories.</p>
+            <div class="card-actions-stack">
+                <div class="card-actions-row">
+                    <a href="{% url 'admin:store_category_add' %}" class="btn-dashboard primary">+ Add Category</a>
+                    <a href="{% url 'admin:store_category_changelist' %}" class="btn-dashboard secondary">View All</a>
+                </div>
+                <a href="{% url 'admin:store_category_changelist' %}" class="btn-dashboard danger-subtle">
+                    <span>🗑️</span> Manage &amp; Delete Categories
+                </a>
             </div>
         </div>
         
+        <!-- User & Access Management Card -->
         <div class="dashboard-card">
-            <h3>👥 Users & Access</h3>
-            <p>Manage administrators, staff permissions, and customer accounts.</p>
-            <div class="card-actions">
-                <a href="{% url 'admin:auth_user_changelist' %}" class="btn-dashboard secondary">Manage Users</a>
+            <div class="dashboard-card-header">
+                <h3>👥 Accounts &amp; Access</h3>
+            </div>
+            <p>Manage store administrators, staff permissions, and customer authentication records.</p>
+            <div class="card-actions-stack">
+                <div class="card-actions-row">
+                    <a href="{% url 'admin:auth_user_changelist' %}" class="btn-dashboard secondary">Manage Users</a>
+                    <a href="{% url 'admin:auth_group_changelist' %}" class="btn-dashboard secondary">User Groups</a>
+                </div>
+                <a href="{% url 'store:home' %}" target="_blank" class="btn-dashboard primary">
+                    <span>🌐</span> Preview Live Store
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- How to Delete & Manage Items Tip Box -->
+    <div class="dashboard-tips-box">
+        <h4>💡 Quick Guide: How to Delete Products or Categories</h4>
+        <div class="dashboard-tips-grid">
+            <div class="tip-item">
+                <strong>1. One-Click Row Delete</strong>
+                Open any product or category list and click the red <b>🗑️ Delete</b> button right in the table row.
+            </div>
+            <div class="tip-item">
+                <strong>2. Bulk Deletion</strong>
+                Select checkboxes next to multiple items, choose <i>"Delete selected"</i> from the action dropdown, and click <b>Go</b>.
+            </div>
+            <div class="tip-item">
+                <strong>3. Inside Edit View</strong>
+                Click on any product or category to edit, then click the red <b>Delete</b> button at the bottom of the form.
             </div>
         </div>
     </div>
@@ -54,16 +98,16 @@
             {% load log %}
             {% get_admin_log 10 as admin_log for_user user %}
             {% if not admin_log %}
-            <p>{% translate 'None available' %}</p>
+            <p style="padding: 12px 18px; color: var(--body-quiet-color);">{% translate 'None available' %}</p>
             {% else %}
             <ul class="actionlist">
             {% for entry in admin_log %}
             <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
                 <span class="visually-hidden">{% if entry.is_addition %}{% translate 'Added:' %}{% elif entry.is_change %}{% translate 'Changed:' %}{% elif entry.is_deletion %}{% translate 'Deleted:' %}{% endif %}</span>
                 {% if entry.is_deletion or not entry.get_admin_url %}
-                    {{ entry.object_repr|to_object_display_value }}
+                    {{ entry.object_repr }}
                 {% else %}
-                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr|to_object_display_value }}</a>
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
                 {% endif %}
                 <br>
                 {% if entry.content_type %}

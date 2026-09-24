@@ -1,32 +1,53 @@
 {% load i18n static %}
 <button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
 <nav class="sticky" id="nav-sidebar">
-  <!-- Search Filter (Standard Django) -->
   <input type="search" id="nav-filter"
-         placeholder="{% translate 'Start typing to filter…' %}"
+         placeholder="{% translate 'Quick filter…' %}"
          aria-label="{% translate 'Filter navigation items' %}">
   
   <div class="custom-sidebar">
     <div class="sidebar-section">
-      <h3><img src="{% static 'admin/img/icon-changelink.svg' %}" alt=""> Store Management</h3>
+      <h3>🌱 Store Management</h3>
       <ul class="sidebar-menu">
-        <li><a href="{% url 'admin:store_product_changelist' %}">Products</a></li>
-        <li><a href="{% url 'admin:store_category_changelist' %}">Categories</a></li>
+        <li>
+          <a href="{% url 'admin:store_product_changelist' %}" class="sidebar-menu-item">
+            <span>🛍️ Products</span>
+            <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_product_add' %}';" title="Add New Product">+ Add</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin:store_category_changelist' %}" class="sidebar-menu-item">
+            <span>📁 Categories</span>
+            <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_category_add' %}';" title="Add New Category">+ Add</span>
+          </a>
+        </li>
       </ul>
     </div>
     
     <div class="sidebar-section">
-      <h3><img src="{% static 'admin/img/icon-addlink.svg' %}" alt=""> User Management</h3>
+      <h3>👥 Users &amp; Roles</h3>
       <ul class="sidebar-menu">
-        <li><a href="{% url 'admin:auth_user_changelist' %}">Users (Customers/Admins)</a></li>
-        <li><a href="{% url 'admin:auth_group_changelist' %}">Roles & Permissions</a></li>
+        <li>
+          <a href="{% url 'admin:auth_user_changelist' %}" class="sidebar-menu-item">
+            <span>👤 Users</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin:auth_group_changelist' %}" class="sidebar-menu-item">
+            <span>🔐 Groups &amp; Permissions</span>
+          </a>
+        </li>
       </ul>
     </div>
     
     <div class="sidebar-section">
-      <h3><img src="{% static 'admin/img/icon-viewlink.svg' %}" alt="" onerror="this.style.display='none'"> Settings</h3>
+      <h3>🌐 Quick Navigation</h3>
       <ul class="sidebar-menu">
-        <li><a href="{% url 'store:home' %}" target="_blank">View Live Website ↗</a></li>
+        <li>
+          <a href="{% url 'store:home' %}" target="_blank" class="sidebar-menu-item">
+            <span>🌿 View Live Website ↗</span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
