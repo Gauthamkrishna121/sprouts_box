@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from .models import Category, Product
+from .models import Category, Product, SiteSettings
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -85,4 +85,44 @@ class ProductAdmin(admin.ModelAdmin):
             delete_url
         )
     product_actions.short_description = "Actions"
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('📞 Contact Details', {
+            'fields': (
+                ('phone_number', 'phone_hours'),
+                ('email_address', 'email_note'),
+                ('address_line1', 'address_line2'),
+            ),
+            'description': 'Manage contact details displayed on the Contact page and Footer.'
+        }),
+        ('💬 Contact Page Headings & Text', {
+            'fields': (
+                ('contact_subtitle', 'contact_title'),
+                'contact_intro',
+            ),
+            'description': 'Manage headings and introductory text on the Contact page.'
+        }),
+        ('🌐 Social Media Links', {
+            'fields': (
+                ('instagram_url', 'facebook_url'),
+                ('youtube_url', 'whatsapp_url'),
+            ),
+            'description': 'Configure social media icons and profile links.'
+        }),
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        obj = SiteSettings.load()
+        return self.change_view(request, str(obj.pk), extra_context=extra_context)
+
+
 

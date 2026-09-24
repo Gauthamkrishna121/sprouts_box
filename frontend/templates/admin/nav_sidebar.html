@@ -1,54 +1,110 @@
 {% load i18n static %}
-<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}"></button>
-<nav class="sticky" id="nav-sidebar">
-  <input type="search" id="nav-filter"
-         placeholder="{% translate 'Quick filter…' %}"
-         aria-label="{% translate 'Filter navigation items' %}">
+<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}">
+  <span class="toggle-icon">☰</span>
+</button>
+
+<nav class="sticky modern-nav-sidebar" id="nav-sidebar">
+  <div class="sidebar-search-wrap">
+    <div class="sidebar-search-inner">
+      <span class="search-symbol">🔍</span>
+      <input type="search" id="nav-filter"
+             placeholder="{% translate 'Quick search…' %}"
+             aria-label="{% translate 'Filter navigation items' %}">
+    </div>
+  </div>
   
   <div class="custom-sidebar">
+    <!-- Store Catalog Section -->
     <div class="sidebar-section">
-      <h3>🌱 Store Management</h3>
+      <div class="sidebar-section-header">
+        <span class="section-tag">CATALOG &amp; STORE</span>
+      </div>
       <ul class="sidebar-menu">
         <li>
           <a href="{% url 'admin:store_product_changelist' %}" class="sidebar-menu-item">
-            <span>🛍️ Products</span>
-            <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_product_add' %}';" title="Add New Product">+ Add</span>
+            <span class="menu-item-main">
+              <span class="menu-icon">🛍️</span>
+              <span class="menu-label">Products</span>
+            </span>
+            <div class="menu-item-actions">
+              {% if admin_stats.total_products %}
+                <span class="sidebar-count-badge" title="Total Products">{{ admin_stats.total_products }}</span>
+              {% endif %}
+              <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_product_add' %}';" title="Add New Product">+ Add</span>
+            </div>
           </a>
         </li>
         <li>
           <a href="{% url 'admin:store_category_changelist' %}" class="sidebar-menu-item">
-            <span>📁 Categories</span>
-            <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_category_add' %}';" title="Add New Category">+ Add</span>
+            <span class="menu-item-main">
+              <span class="menu-icon">📁</span>
+              <span class="menu-label">Categories</span>
+            </span>
+            <div class="menu-item-actions">
+              {% if admin_stats.total_categories %}
+                <span class="sidebar-count-badge" title="Total Categories">{{ admin_stats.total_categories }}</span>
+              {% endif %}
+              <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_category_add' %}';" title="Add New Category">+ Add</span>
+            </div>
           </a>
         </li>
       </ul>
     </div>
     
+    <!-- Customization Section -->
     <div class="sidebar-section">
-      <h3>👥 Users &amp; Roles</h3>
+      <div class="sidebar-section-header">
+        <span class="section-tag">CUSTOMIZATION</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'admin:store_sitesettings_changelist' %}" class="sidebar-menu-item">
+            <span class="menu-item-main">
+              <span class="menu-icon">⚙️</span>
+              <span class="menu-label">Site &amp; Contact Info</span>
+            </span>
+            <span class="sidebar-tag-live">Active</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Security & Access Section -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-header">
+        <span class="section-tag">SECURITY &amp; USERS</span>
+      </div>
       <ul class="sidebar-menu">
         <li>
           <a href="{% url 'admin:auth_user_changelist' %}" class="sidebar-menu-item">
-            <span>👤 Users</span>
+            <span class="menu-item-main">
+              <span class="menu-icon">👥</span>
+              <span class="menu-label">Users</span>
+            </span>
           </a>
         </li>
         <li>
           <a href="{% url 'admin:auth_group_changelist' %}" class="sidebar-menu-item">
-            <span>🔐 Groups &amp; Permissions</span>
+            <span class="menu-item-main">
+              <span class="menu-icon">🔐</span>
+              <span class="menu-label">Groups &amp; Roles</span>
+            </span>
           </a>
         </li>
       </ul>
     </div>
     
-    <div class="sidebar-section">
-      <h3>🌐 Quick Navigation</h3>
-      <ul class="sidebar-menu">
-        <li>
-          <a href="{% url 'store:home' %}" target="_blank" class="sidebar-menu-item">
-            <span>🌿 View Live Website ↗</span>
-          </a>
-        </li>
-      </ul>
+    <!-- Sidebar Footer Live Card -->
+    <div class="sidebar-footer-card">
+      <div class="sidebar-footer-header">
+        <span class="status-pulse-dot"></span>
+        <span class="status-title">Storefront Online</span>
+      </div>
+      <p class="sidebar-footer-text">Lush &amp; Healthy live catalog is accessible to customers.</p>
+      <a href="{% url 'store:home' %}" target="_blank" class="sidebar-footer-btn">
+        <span>Visit Storefront</span>
+        <span>↗</span>
+      </a>
     </div>
   </div>
 </nav>
