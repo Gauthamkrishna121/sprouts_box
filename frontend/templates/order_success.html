@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed | Sprouts Box{% endblock %}
+
+{% block content %}
+<div class="order-success-page">
+    <div class="order-success-card">
+        <!-- Success Badge -->
+        <div class="success-icon-badge">
+            <i data-feather="check"></i>
+        </div>
+
+        <span class="success-subtitle">Order Confirmed!</span>
+        <h1 class="success-title">Thank you for choosing Sprouts Box, {{ order.full_name }}!</h1>
+        <p class="success-desc">
+            Your farm fresh produce is being scheduled for harvest and dispatch. We will bring nature's best right to your doorstep.
+        </p>
+
+        <!-- Order Reference Pill -->
+        <div class="order-number-pill">
+            <span class="pill-label">Order Number:</span>
+            <span class="pill-value">#{{ order.order_number }}</span>
+        </div>
+
+        <!-- WhatsApp Instant Connect Action -->
+        {% if whatsapp_url %}
+        <div class="whatsapp-prompt-box">
+            <div class="prompt-icon">
+                <i data-feather="message-circle"></i>
+            </div>
+            <div class="prompt-content">
+                <h4>Get Instant WhatsApp Updates</h4>
+                <p>Send your order confirmation to our farm dispatch team on WhatsApp for live harvest and delivery status!</p>
+                <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-whatsapp-order">
+                    <i data-feather="message-circle"></i> Confirm Order on WhatsApp
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Order Summary Details -->
+        <div class="order-details-card">
+            <div class="details-header">
+                <h3>Order Summary</h3>
+                <span class="order-date">{{ order.created_at|date:"F d, Y &bull; h:i A" }}</span>
+            </div>
+
+            <div class="order-items-compact-list">
+                {% for item in order.items.all %}
+                <div class="order-item-compact">
+                    <div class="item-name-qty">
+                        <span class="qty-badge">{{ item.quantity }}x</span>
+                        <span class="name">{{ item.product_name }}</span>
+                        <span class="unit">({{ item.unit }})</span>
+                    </div>
+                    <span class="item-price">₹{{ item.get_total_price|floatformat:2 }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="order-cost-breakdown">
+                <div class="cost-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ order.subtotal|floatformat:2 }}</span>
+                </div>
+                <div class="cost-row">
+                    <span>Delivery Fee</span>
+                    <span>{% if order.shipping_fee == 0 %}<strong class="text-success">FREE</strong>{% else %}₹{{ order.shipping_fee|floatformat:2 }}{% endif %}</span>
+                </div>
+                <div class="cost-row total-row">
+                    <span>Grand Total</span>
+                    <span class="total-price">₹{{ order.total_amount|floatformat:2 }}</span>
+                </div>
+                <div class="cost-row payment-mode-row">
+                    <span>Payment Mode</span>
+                    <span class="badge-payment">{{ order.get_payment_method_display }}</span>
+                </div>
+            </div>
+
+            <!-- Customer & Shipping Summary -->
+            <div class="shipping-info-block">
+                <h4><i data-feather="map-pin"></i> Delivery Address</h4>
+                <p><strong>{{ order.full_name }}</strong> &bull; {{ order.phone_number }}</p>
+                <p>{{ order.delivery_address }}, {{ order.city }} {% if order.postal_code %}- {{ order.postal_code }}{% endif %}</p>
+                {% if order.delivery_notes %}
+                <p class="delivery-note"><strong>Note:</strong> {{ order.delivery_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Back to Store Action -->
+        <div class="order-next-actions">
+            <a href="{% url 'store:shop' %}" class="btn btn-primary">
+                <i data-feather="shopping-bag"></i> Continue Shopping
+            </a>
+            <a href="{% url 'store:home' %}" class="btn btn-light">
+                <i data-feather="home"></i> Return to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
