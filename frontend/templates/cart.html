@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Harvest Basket | Sprouts Box{% endblock %}
+
+{% block content %}
+<!-- Cart Hero Banner -->
+<section class="page-hero cart-hero">
+    <div class="page-hero-content">
+        <span class="section-subtitle"><i data-feather="shopping-bag"></i> Farm Fresh Basket &mdash;</span>
+        <h1 class="page-title">Your Harvest Basket</h1>
+        <p class="page-subtitle">Pure, chemical-free produce harvested fresh from Kerala's local eco-farms.</p>
+    </div>
+</section>
+
+<!-- Cart Main Section -->
+<section class="cart-main-section">
+    <div class="cart-container">
+
+        <!-- Checkout Progress Stepper -->
+        <div class="checkout-stepper">
+            <div class="step-item active">
+                <div class="step-circle"><i data-feather="shopping-bag"></i></div>
+                <div class="step-label">
+                    <span class="step-number">Step 1</span>
+                    <span class="step-title">Review Basket</span>
+                </div>
+            </div>
+            <div class="step-divider {% if cart|length > 0 %}completed{% endif %}"></div>
+            <div class="step-item {% if cart|length > 0 %}current{% endif %}">
+                <div class="step-circle"><i data-feather="map-pin"></i></div>
+                <div class="step-label">
+                    <span class="step-number">Step 2</span>
+                    <span class="step-title">Delivery Details</span>
+                </div>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item">
+                <div class="step-circle"><i data-feather="check-circle"></i></div>
+                <div class="step-label">
+                    <span class="step-number">Step 3</span>
+                    <span class="step-title">Farm Confirmation</span>
+                </div>
+            </div>
+        </div>
+
+        {% if error_message %}
+        <div class="cart-alert-error">
+            <i data-feather="alert-triangle"></i>
+            <span>{{ error_message }}</span>
+        </div>
+        {% endif %}
+
+        <div class="cart-layout-grid" id="cartLayoutGrid">
+            {% if cart|length > 0 %}
+            <!-- Left Column: Basket Items -->
+            <div class="cart-items-section">
+
+                <!-- Free Delivery Progress Card -->
+                <div class="free-shipping-card" id="cartFreeShippingCard">
+                    <div class="free-shipping-icon">
+                        <i data-feather="truck"></i>
+                    </div>
+                    <div class="free-shipping-info">
+                        <div class="free-shipping-header">
+                            {% if summary.has_free_shipping %}
+                                <span class="free-shipping-msg text-success">
+                                    <i data-feather="check-circle"></i> <strong>FREE Delivery Unlocked!</strong> Your order qualifies for zero shipping charge.
+                                </span>
+                            {% else %}
+                                <span class="free-shipping-msg">
+                                    Add <strong>₹{{ summary.amount_needed_for_free_shipping|floatformat:2 }}</strong> more of farm produce to unlock <strong>FREE Delivery</strong>!
+                                </span>
+                            {% endif %}
+                            <span class="threshold-badge">Free shipping over ₹{{ summary.free_shipping_threshold|floatformat:0 }}</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-bar-fill" style="width: {{ summary.free_shipping_progress }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produce Items Table Card -->
+                <div class="cart-table-card">
+                    <div class="cart-card-header">
+                        <div class="cart-header-title-wrap">
+                            <span class="cart-table-title">Harvest Items</span>
+                            <span class="items-count-tag" id="pageItemsCount">{{ summary.total_items }} produce</span>
+                        </div>
+                        <button type="button" class="btn-clear-cart-full" id="pageClearCartBtn" title="Empty basket">
+                            <i data-feather="trash-2"></i> Clear Basket
+                        </button>
+                    </div>
+
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th class="col-product">Organic Produce</th>
+                                <th class="col-price">Unit Price</th>
+                                <th class="col-qty">Quantity</th>
+                                <th class="col-total">Subtotal</th>
+                                <th class="col-remove"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartPageTableBody">
+                            {% for item in cart %}
+                            <tr class="cart-table-row" data-product-id="{{ item.product_id }}">
+                                <td class="col-product">
+                                    <div class="table-product-cell">
+                                        <div class="table-product-thumb">
+                                            <img src="{{ item.image_url }}" alt="{{ item.name }}" onerror="this.src='/static/plugin/images/prod_tomatoes.png'">
+                                        </div>
+                                        <div class="table-product-meta">
+                                            <h3 class="table-product-name">{{ item.name }}</h3>
+                                            <span class="table-product-unit"><i data-feather="tag"></i> Pack: {{ item.unit }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="col-price">
+                                    <span class="table-price">₹{{ item.price|floatformat:2 }}</span>
+                                </td>
+                                <td class="col-qty">
+                                    <div class="qty-stepper">
+                                        <button type="button" class="qty-btn qty-minus" data-id="{{ item.product_id }}" aria-label="Decrease quantity">−</button>
+                                        <span class="qty-value" data-id="{{ item.product_id }}">{{ item.quantity }}</span>
+                                        <button type="button" class="qty-btn qty-plus" data-id="{{ item.product_id }}" aria-label="Increase quantity">+</button>
+                                    </div>
+                                </td>
+                                <td class="col-total">
+                                    <span class="table-total-price">₹{{ item.total_price|floatformat:2 }}</span>
+                                </td>
+                                <td class="col-remove">
+                                    <button type="button" class="table-remove-btn" data-id="{{ item.product_id }}" title="Remove item" aria-label="Remove item">
+                                        <i data-feather="x"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="cart-card-footer">
+                        <a href="{% url 'store:shop' %}" class="btn-continue-shopping">
+                            <i data-feather="arrow-left"></i> Continue Shopping
+                        </a>
+                        <span class="eco-badge"><i data-feather="check"></i> 100% Biodegradable Packaging Included</span>
+                    </div>
+                </div>
+
+                <!-- Farm Guarantee & Trust Features -->
+                <div class="cart-trust-badges">
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i data-feather="shield"></i></div>
+                        <div>
+                            <h4>100% Certified Organic</h4>
+                            <p>Naturally grown with zero synthetic fertilizers or artificial ripeners.</p>
+                        </div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i data-feather="sun"></i></div>
+                        <div>
+                            <h4>Harvested Morning of Delivery</h4>
+                            <p>Produce is picked from plants only after order confirmation.</p>
+                        </div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i data-feather="users"></i></div>
+                        <div>
+                            <h4>Fair Wages to Local Farmers</h4>
+                            <p>Your purchase directly empowers Kerala's organic farming community.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Summary & Checkout -->
+            <div class="cart-checkout-section">
+
+                <!-- Order Summary Card -->
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <span class="section-subtitle"><i data-feather="file-text"></i> Summary &mdash;</span>
+                        <h3 class="summary-card-title">Order Overview</h3>
+                    </div>
+
+                    <div class="summary-rows">
+                        <div class="summary-line">
+                            <span class="label">Produce Total</span>
+                            <span class="value" id="pageSubtotal">₹{{ summary.subtotal|floatformat:2 }}</span>
+                        </div>
+                        <div class="summary-line">
+                            <span class="label">Eco-Friendly Packaging</span>
+                            <span class="value text-success font-semibold">FREE</span>
+                        </div>
+                        <div class="summary-line">
+                            <span class="label">Doorstep Delivery</span>
+                            <span class="value" id="pageShipping">
+                                {% if summary.has_free_shipping %}
+                                    <span class="badge-free-delivery">FREE</span>
+                                {% else %}
+                                    ₹{{ summary.shipping|floatformat:2 }}
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Dynamic Promo Code Block -->
+                        <div class="promo-code-container">
+                            <div class="promo-input-wrap">
+                                <i data-feather="percent" class="promo-icon"></i>
+                                <input type="text" id="promoCodeInput" placeholder="Promo code (e.g. SPROUTS10)" class="promo-input">
+                                <button type="button" id="applyPromoBtn" class="btn-apply-promo">Apply</button>
+                            </div>
+                            <div class="promo-feedback" id="promoFeedback" style="display: none;"></div>
+                        </div>
+
+                        <div class="summary-line discount-row" id="discountRow" style="display: none;">
+                            <span class="label text-success">Promo Discount</span>
+                            <span class="value text-success" id="discountValue">-₹0.00</span>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-line summary-grand-total">
+                            <span class="label">Grand Total</span>
+                            <span class="total-amount" id="pageGrandTotal">₹{{ summary.total|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doorstep Checkout Form Card -->
+                <div class="checkout-form-card">
+                    <div class="checkout-form-header">
+                        <span class="section-subtitle"><i data-feather="truck"></i> Fresh Harvest Delivery &mdash;</span>
+                        <h3 class="checkout-form-title">Delivery Details</h3>
+                    </div>
+
+                    <form method="POST" action="{% url 'store:checkout' %}" id="checkoutForm" class="checkout-form">
+                        {% csrf_token %}
+
+                        <!-- Full Name -->
+                        <div class="form-field-group">
+                            <label for="fullName"><i data-feather="user"></i> Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" name="full_name" required placeholder="e.g. Priya Sharma" class="form-control">
+                        </div>
+
+                        <!-- Contact Row -->
+                        <div class="form-field-row">
+                            <div class="form-field-group">
+                                <label for="phoneNumber"><i data-feather="phone"></i> Phone Number <span class="required">*</span></label>
+                                <input type="tel" id="phoneNumber" name="phone_number" required placeholder="98765 43210" class="form-control">
+                            </div>
+                            <div class="form-field-group">
+                                <label for="email"><i data-feather="mail"></i> Email <span class="optional">(Optional)</span></label>
+                                <input type="email" id="email" name="email" placeholder="priya@example.com" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Delivery Address -->
+                        <div class="form-field-group">
+                            <label for="deliveryAddress"><i data-feather="map-pin"></i> Delivery Address <span class="required">*</span></label>
+                            <textarea id="deliveryAddress" name="delivery_address" required rows="2" placeholder="House/Flat number, Street name, Landmark" class="form-control"></textarea>
+                        </div>
+
+                        <div class="form-field-row">
+                            <div class="form-field-group">
+                                <label for="city">City / District <span class="required">*</span></label>
+                                <input type="text" id="city" name="city" value="Kerala" required class="form-control">
+                            </div>
+                            <div class="form-field-group">
+                                <label for="postalCode">PIN Code</label>
+                                <input type="text" id="postalCode" name="postal_code" placeholder="682001" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Harvest Delivery Slot -->
+                        <div class="form-field-group">
+                            <label><i data-feather="clock"></i> Preferred Harvest Delivery Slot</label>
+                            <div class="delivery-slots-grid">
+                                <label class="slot-pill active">
+                                    <input type="radio" name="delivery_slot" value="morning" checked>
+                                    <span class="slot-content">
+                                        <strong>🌅 Morning Slot</strong>
+                                        <small>7:00 AM – 11:00 AM (Freshest)</small>
+                                    </span>
+                                </label>
+                                <label class="slot-pill">
+                                    <input type="radio" name="delivery_slot" value="evening">
+                                    <span class="slot-content">
+                                        <strong>🌇 Evening Slot</strong>
+                                        <small>4:00 PM – 8:00 PM</small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Special Instructions -->
+                        <div class="form-field-group">
+                            <label for="deliveryNotes"><i data-feather="message-square"></i> Special Delivery Notes <span class="optional">(Optional)</span></label>
+                            <input type="text" id="deliveryNotes" name="delivery_notes" placeholder="e.g. Leave with security, call on arrival" class="form-control">
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="form-field-group">
+                            <label><i data-feather="credit-card"></i> Payment Method</label>
+                            <div class="payment-options-grid">
+                                <label class="payment-pill active">
+                                    <input type="radio" name="payment_method" value="cod" checked>
+                                    <div class="payment-pill-icon"><i data-feather="dollar-sign"></i></div>
+                                    <span class="payment-pill-label">
+                                        <strong>Cash on Delivery (COD)</strong>
+                                        <small>Pay in cash upon doorstep delivery</small>
+                                    </span>
+                                    <span class="payment-check"><i data-feather="check"></i></span>
+                                </label>
+
+                                <label class="payment-pill">
+                                    <input type="radio" name="payment_method" value="upi">
+                                    <div class="payment-pill-icon"><i data-feather="smartphone"></i></div>
+                                    <span class="payment-pill-label">
+                                        <strong>UPI / QR on Delivery</strong>
+                                        <small>Scan and pay via GPay, PhonePe, or Paytm</small>
+                                    </span>
+                                    <span class="payment-check"><i data-feather="check"></i></span>
+                                </label>
+
+                                <label class="payment-pill">
+                                    <input type="radio" name="payment_method" value="whatsapp">
+                                    <div class="payment-pill-icon"><i data-feather="message-circle"></i></div>
+                                    <span class="payment-pill-label">
+                                        <strong>Confirm Order on WhatsApp</strong>
+                                        <small>Direct instant order booking with farm manager</small>
+                                    </span>
+                                    <span class="payment-check"><i data-feather="check"></i></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Order Button -->
+                        <button type="submit" class="btn btn-primary btn-submit-order" id="submitOrderBtn">
+                            <span>Place Order &bull; <strong id="btnOrderTotal">₹{{ summary.total|floatformat:2 }}</strong></span>
+                            <i data-feather="arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            {% else %}
+            <!-- Full Page Empty State -->
+            <div class="cart-empty-full-page">
+                <div class="empty-page-icon-wrap">
+                    <div class="empty-page-icon">
+                        <i data-feather="shopping-bag"></i>
+                    </div>
+                </div>
+                <span class="section-subtitle"><i data-feather="leaf"></i> Pure &amp; Organic &mdash;</span>
+                <h2 class="empty-page-title">Your Harvest Basket is Empty</h2>
+                <p class="empty-page-desc">
+                    You haven't added any farm fresh produce to your basket yet. Explore our chemical-free seasonal vegetables, fresh fruits, and handpicked greens!
+                </p>
+                <div class="empty-page-actions">
+                    <a href="{% url 'store:shop' %}" class="btn btn-primary btn-lg">
+                        <i data-feather="shopping-bag"></i> Explore Organic Store <i data-feather="arrow-right"></i>
+                    </a>
+                </div>
+
+                {% if recommended_products %}
+                <!-- Recommended Seasonal Produce Grid -->
+                <div class="recommended-section">
+                    <div class="section-header center">
+                        <div>
+                            <span class="section-subtitle"><i data-feather="sun"></i> Fresh Harvest Recommendations &mdash;</span>
+                            <h3 class="section-title">Popular Fresh Picks</h3>
+                        </div>
+                    </div>
+                    <div class="product-grid shop-product-grid">
+                        {% for product in recommended_products %}
+                        <div class="product-card">
+                            <div class="product-badge">{{ product.category.name }}</div>
+                            <div class="product-image">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="/static/plugin/images/prod_tomatoes.png" alt="{{ product.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <p class="product-price">&#8377;{{ product.price }} <span class="unit">/ {{ product.unit }}</span></p>
+                                <button type="button" class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" data-product-unit="{{ product.unit }}">
+                                    <i data-feather="shopping-bag"></i> <span>Add to Cart</span>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock content %}

@@ -114,7 +114,9 @@
             <div class="product-details">
                 <h3 class="product-name">{{ product.name }}</h3>
                 <p class="product-price">&#8377;{{ product.price }} <span class="unit">/ {{ product.unit }}</span></p>
-                <button class="btn btn-cart"><i data-feather="shopping-bag"></i> Add to Cart</button>
+                <button type="button" class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" data-product-unit="{{ product.unit }}">
+                    <i data-feather="shopping-bag"></i> <span>Add to Cart</span>
+                </button>
             </div>
         </div>
         {% empty %}

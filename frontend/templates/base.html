@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{% block title %}Sprouts Box | Lush &amp; Healthy{% endblock %}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +22,11 @@
                 <img src="/static/plugin/images/logo.png" alt="Sprouts Box Logo" onerror="this.src='https://placehold.co/180x60/1B4332/FFFFFF?text=Sprouts+Box'">
             </a>
             
-            <nav class="nav-links">
+            <nav class="nav-links" id="mobileNavMenu" role="navigation" aria-label="Main navigation">
+                <!-- Mobile close button (shown inside the full-screen overlay) -->
+                <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+                    <i data-feather="x"></i>
+                </button>
                 <a href="{% url 'store:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
                 <a href="{% url 'store:shop' %}" class="nav-item {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
                 <a href="{% url 'store:about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a>
@@ -32,11 +37,13 @@
             <div class="nav-actions">
                 <a href="#" class="icon-link" title="Search"><i data-feather="search"></i></a>
                 <a href="#" class="icon-link" title="Account"><i data-feather="user"></i></a>
-                <a href="#" class="icon-link cart-icon" title="Shopping Cart">
+                <a href="{% url 'store:cart_detail' %}" class="icon-link cart-icon {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}" id="navCartLink" aria-label="Shopping Cart" title="View Shopping Cart">
                     <i data-feather="shopping-bag"></i>
-                    <span class="cart-count">0</span>
+                    <span class="cart-count" id="navCartCount">{{ cart|length }}</span>
                 </a>
-                <button class="mobile-menu-btn"><i data-feather="menu"></i></button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavMenu">
+                    <i data-feather="menu" id="menuIconOpen"></i>
+                </button>
             </div>
         </div>
     </header>
@@ -46,6 +53,9 @@
         {% block content %}
         {% endblock content %}
     </main>
+
+    <!-- Global Toast Notifications Container -->
+    <div class="sprouts-toast-container" id="sproutsToastContainer" aria-live="polite"></div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -94,5 +104,59 @@
     <script>
         feather.replace();
     </script>
+
+    <!-- Mobile Hamburger Menu -->
+    <script>
+        (function () {
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('mobileNavMenu');
+            const closeBtn = document.getElementById('mobileNavClose');
+
+            function openMenu() {
+                navMenu.classList.add('mobile-open');
+                document.body.style.overflow = 'hidden';
+                menuBtn.setAttribute('aria-expanded', 'true');
+                menuBtn.innerHTML = '<i data-feather="x"></i>';
+                if (window.feather) feather.replace();
+            }
+
+            function closeMenu() {
+                navMenu.classList.remove('mobile-open');
+                document.body.style.overflow = '';
+                menuBtn.setAttribute('aria-expanded', 'false');
+                menuBtn.innerHTML = '<i data-feather="menu"></i>';
+                if (window.feather) feather.replace();
+            }
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', function () {
+                    if (navMenu.classList.contains('mobile-open')) {
+                        closeMenu();
+                    } else {
+                        openMenu();
+                    }
+                });
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeMenu);
+            }
+
+            // Close when any nav link is tapped
+            if (navMenu) {
+                navMenu.querySelectorAll('.nav-item').forEach(function (link) {
+                    link.addEventListener('click', closeMenu);
+                });
+            }
+
+            // Close on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
+    </script>
+
+    <!-- Cart System JavaScript -->
+    <script src="/static/js/cart.js"></script>
 </body>
-</html>
+</html>

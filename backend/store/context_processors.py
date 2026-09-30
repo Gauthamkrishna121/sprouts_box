@@ -37,3 +37,16 @@ def site_settings(request):
             'categories_list': categories_list,
         }
     }
+
+
+def cart_context(request):
+    """
+    Context processor to make current user's session Cart available in all templates.
+    """
+    from .cart import Cart
+    cart = Cart(request)
+    return {
+        'cart': cart,
+        'cart_summary': cart.get_summary()
+    }
+
