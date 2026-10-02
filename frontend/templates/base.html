@@ -30,7 +30,6 @@
                 <a href="{% url 'store:home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
                 <a href="{% url 'store:shop' %}" class="nav-item {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
                 <a href="{% url 'store:about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Us</a>
-                <a href="#" class="nav-item">Sustainability</a>
                 <a href="{% url 'store:contact' %}" class="nav-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
             </nav>
 
