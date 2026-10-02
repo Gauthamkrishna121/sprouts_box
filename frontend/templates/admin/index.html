@@ -34,6 +34,37 @@
         </div>
     </div>
 
+    <!-- Inventory Restock Alert Banner (Displays when items are out of stock) -->
+    {% if admin_stats.out_of_stock_products > 0 %}
+    <div class="inventory-alert-banner">
+        <div class="alert-icon-wrap">
+            <span class="alert-icon">⚠️</span>
+        </div>
+        <div class="alert-content-wrap">
+            <div class="alert-tag">ACTION REQUIRED &bull; INVENTORY ALERT</div>
+            <h3 class="alert-title">{{ admin_stats.out_of_stock_products }} product{{ admin_stats.out_of_stock_products|pluralize }} currently flagged as Out of Stock!</h3>
+            <p class="alert-desc">These items cannot be added to customer bags on the live website. Review inventory, restock harvests, or bulk update availability.</p>
+            {% if admin_stats.out_of_stock_list %}
+            <div class="alert-items-strip">
+                {% for item in admin_stats.out_of_stock_list %}
+                <span class="alert-item-pill">
+                    {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" class="pill-thumb">{% else %}🌱{% endif %}
+                    <span class="pill-name">{{ item.name }}</span>
+                    <a href="{% url 'admin:store_product_change' item.pk %}" class="pill-action" title="Edit product and restock">Restock ↗</a>
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="alert-actions-wrap">
+            <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="btn-alert-cta">
+                <span>Manage Out-of-Stock</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Live Store Metrics Bar -->
     <div class="metrics-grid">
         <!-- Total Products Metric -->
@@ -44,7 +75,7 @@
             </div>
             <div class="metric-body">
                 <div class="metric-value">{{ admin_stats.total_products|default:"0" }}</div>
-                <div class="metric-subtext">Items listed in store</div>
+                <div class="metric-subtext">Items in catalog</div>
             </div>
             <div class="metric-footer">
                 <a href="{% url 'admin:store_product_changelist' %}" class="metric-link">View all products &rarr;</a>
@@ -70,7 +101,7 @@
         </div>
 
         <!-- Out of Stock Alert Metric -->
-        <div class="metric-card">
+        <div class="metric-card {% if admin_stats.out_of_stock_products > 0 %}card-warning-active{% endif %}">
             <div class="metric-header">
                 <span class="metric-title">OUT OF STOCK</span>
                 <span class="metric-icon-wrap bg-amber">⚠️</span>

@@ -39,39 +39,118 @@ class ProductAdmin(admin.ModelAdmin):
         'image_thumbnail',
         'name',
         'category',
-        'formatted_price',
+        'price',
         'unit',
         'availability_badge',
         'is_available',
         'updated_at',
         'product_actions'
     )
-    list_filter = ('category', 'is_available', 'created_at')
-    list_editable = ('is_available',)
+    list_display_links = ('name',)
+    list_editable = ('price', 'unit', 'is_available')
+    list_filter = ('is_available', 'category', 'created_at', 'updated_at')
+    search_fields = ('name', 'description', 'category__name', 'slug')
+    search_help_text = "Search products by name, description, category, or slug"
     prepopulated_fields = {'slug': ('name',)}
-    search_fields = ('name', 'description')
     list_per_page = 20
     ordering = ('-created_at',)
+    readonly_fields = ('created_at', 'updated_at', 'image_preview')
+    actions = ['mark_as_available', 'mark_as_unavailable', 'duplicate_products']
+
+    class Media:
+        js = ('js/admin_product_preview.js',)
+
+    fieldsets = (
+        ('🌿 Basic Information', {
+            'fields': (
+                ('name', 'slug'),
+                'category',
+                'description',
+            ),
+            'description': 'Product identification, permalink slug, and category assignment.'
+        }),
+        ('💰 Pricing & Packaging', {
+            'fields': (
+                ('price', 'unit'),
+            ),
+            'description': 'Set customer retail price and selling unit.'
+        }),
+        ('📦 Inventory & Stock Status', {
+            'fields': (
+                'is_available',
+            ),
+            'description': 'Control storefront availability. When unchecked, product is flagged as Out of Stock.'
+        }),
+        ('🖼️ Product Media & Photography', {
+            'fields': (
+                'image_preview',
+                'image',
+            ),
+            'description': 'Upload high-resolution produce photography for store cards and product listings.'
+        }),
+        ('⏱️ Audit Log & Timestamps', {
+            'fields': (
+                ('created_at', 'updated_at'),
+            ),
+            'classes': ('collapse',),
+            'description': 'System managed audit timestamps.'
+        }),
+    )
 
     def image_thumbnail(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" class="admin-table-thumb" alt="{}" />',
+                '<div class="admin-table-thumb-wrap">'
+                '  <img src="{}" class="admin-table-thumb" alt="{}" />'
+                '  <div class="admin-thumb-hover-preview">'
+                '    <img src="{}" alt="{}" />'
+                '    <div class="thumb-hover-info">'
+                '      <div class="hover-title">{}</div>'
+                '      <div class="hover-meta">₹{} / {}</div>'
+                '    </div>'
+                '  </div>'
+                '</div>',
                 obj.image.url,
-                obj.name
+                obj.name,
+                obj.image.url,
+                obj.name,
+                obj.name,
+                obj.price,
+                obj.unit
             )
-        return mark_safe('<div class="admin-table-thumb-placeholder">🌱</div>')
-    image_thumbnail.short_description = "Image"
-
-    def formatted_price(self, obj):
-        return format_html('<span class="admin-price">₹{}</span>', obj.price)
-    formatted_price.short_description = "Price"
+        return mark_safe('<div class="admin-table-thumb-placeholder" title="No image uploaded">🌱</div>')
+    image_thumbnail.short_description = "Photo"
 
     def availability_badge(self, obj):
         if obj.is_available:
-            return mark_safe('<span class="status-badge in-stock">● In Stock</span>')
-        return mark_safe('<span class="status-badge out-of-stock">○ Out of Stock</span>')
-    availability_badge.short_description = "Stock Status"
+            return mark_safe('<span class="status-badge in-stock"><span class="badge-dot green"></span>In Stock</span>')
+        return mark_safe('<span class="status-badge out-of-stock"><span class="badge-dot red"></span>Out of Stock</span>')
+    availability_badge.short_description = "Stock Badge"
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<div class="admin-image-preview-card">'
+                '  <div class="preview-img-container">'
+                '    <img src="{}" alt="{}" class="form-preview-thumb" />'
+                '  </div>'
+                '  <div class="preview-details">'
+                '    <div class="preview-status-tag">✓ Active Product Image</div>'
+                '    <a href="{}" target="_blank" class="preview-full-link">Open Full Size Image ↗</a>'
+                '  </div>'
+                '</div>',
+                obj.image.url,
+                obj.name,
+                obj.image.url
+            )
+        return mark_safe(
+            '<div class="admin-image-preview-card empty">'
+            '  <div class="preview-empty-icon">📷</div>'
+            '  <p>No image currently uploaded for this product.</p>'
+            '  <small>Select a file below to preview and upload.</small>'
+            '</div>'
+        )
+    image_preview.short_description = "Current Image Preview"
 
     def product_actions(self, obj):
         edit_url = reverse('admin:store_product_change', args=[obj.pk])
@@ -85,6 +164,36 @@ class ProductAdmin(admin.ModelAdmin):
             delete_url
         )
     product_actions.short_description = "Actions"
+
+    @admin.action(description="🌱 Mark selected products as In Stock")
+    def mark_as_available(self, request, queryset):
+        count = queryset.update(is_available=True)
+        self.message_user(request, f"Successfully marked {count} product(s) as In Stock.")
+
+    @admin.action(description="⚠️ Mark selected products as Out of Stock")
+    def mark_as_unavailable(self, request, queryset):
+        count = queryset.update(is_available=False)
+        self.message_user(request, f"Successfully marked {count} product(s) as Out of Stock.")
+
+    @admin.action(description="📋 Duplicate selected product(s)")
+    def duplicate_products(self, request, queryset):
+        import uuid
+        count = 0
+        for obj in queryset:
+            unique_suffix = uuid.uuid4().hex[:5]
+            new_slug = f"{obj.slug}-copy-{unique_suffix}"
+            Product.objects.create(
+                category=obj.category,
+                name=f"{obj.name} (Copy)",
+                slug=new_slug,
+                description=obj.description,
+                price=obj.price,
+                unit=obj.unit,
+                image=obj.image,
+                is_available=False
+            )
+            count += 1
+        self.message_user(request, f"Successfully duplicated {count} product(s) as draft copies.")
 
 
 @admin.register(SiteSettings)
