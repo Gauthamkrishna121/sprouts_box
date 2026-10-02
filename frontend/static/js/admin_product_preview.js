@@ -105,4 +105,98 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.add('open');
         });
     });
+
+    // 3. Dynamic Changelist Table Enhancements
+    const resultTable = document.getElementById('result_list');
+    if (resultTable) {
+        const actionCounter = document.querySelector('.action-counter');
+        const saveBtn = document.querySelector('input[name="_save"]');
+
+        function updateActionCounter() {
+            const checkedBoxes = resultTable.querySelectorAll('tbody input.action-select:checked');
+            if (actionCounter) {
+                if (checkedBoxes.length > 0) {
+                    actionCounter.classList.add('has-selection');
+                } else {
+                    actionCounter.classList.remove('has-selection');
+                }
+            }
+        }
+
+        function markUnsaved() {
+            if (saveBtn && !saveBtn.classList.contains('save-pending')) {
+                saveBtn.classList.add('save-pending');
+                saveBtn.value = '💾 Save Changes (Unsaved)';
+            }
+        }
+
+        // Row checkbox click listener
+        resultTable.querySelectorAll('tbody input.action-select').forEach(function (chk) {
+            const row = chk.closest('tr');
+            if (chk.checked && row) row.classList.add('row-checked');
+
+            chk.addEventListener('change', function () {
+                if (row) {
+                    if (chk.checked) {
+                        row.classList.add('row-checked');
+                    } else {
+                        row.classList.remove('row-checked');
+                    }
+                }
+                updateActionCounter();
+            });
+        });
+
+        // Header select all toggle
+        const selectAllToggle = document.getElementById('action-toggle');
+        if (selectAllToggle) {
+            selectAllToggle.addEventListener('change', function () {
+                setTimeout(function () {
+                    resultTable.querySelectorAll('tbody tr').forEach(function (row) {
+                        const chk = row.querySelector('input.action-select');
+                        if (chk && chk.checked) {
+                            row.classList.add('row-checked');
+                        } else {
+                            row.classList.remove('row-checked');
+                        }
+                    });
+                    updateActionCounter();
+                }, 50);
+            });
+        }
+
+        // Live interactive stock toggle sync
+        resultTable.querySelectorAll('td.field-is_available input[type="checkbox"]').forEach(function (chk) {
+            chk.addEventListener('change', function () {
+                const row = chk.closest('tr');
+                if (!row) return;
+
+                const badgeCell = row.querySelector('.field-availability_badge');
+                if (badgeCell) {
+                    if (chk.checked) {
+                        badgeCell.innerHTML = '<span class="status-badge in-stock"><span class="badge-dot green"></span>In Stock</span>';
+                    } else {
+                        badgeCell.innerHTML = '<span class="status-badge out-of-stock"><span class="badge-dot red"></span>Out of Stock</span>';
+                    }
+                }
+                markUnsaved();
+            });
+        });
+
+        // Live price and unit inline edit dirty indicator
+        resultTable.querySelectorAll('td.field-price input, td.field-unit input').forEach(function (input) {
+            input.addEventListener('input', function () {
+                input.classList.add('field-dirty');
+                markUnsaved();
+            });
+        });
+
+        // Search bar enhancements
+        const searchInput = document.getElementById('searchbar');
+        if (searchInput) {
+            if (!searchInput.getAttribute('placeholder')) {
+                searchInput.setAttribute('placeholder', 'Search produce by name, description, category, or slug…');
+            }
+        }
+    }
 });

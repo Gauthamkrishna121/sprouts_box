@@ -1,372 +1,410 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static %}
+{% load i18n static log %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
 
-{% block coltype %}colMS{% endblock %}
-
+{% block coltype %}colM{% endblock %}
 {% block bodyclass %}{{ block.super }} dashboard{% endblock %}
-
 {% block nav-breadcrumbs %}{% endblock %}
 
 {% block content %}
-<div id="content-main" class="modern-dashboard">
-    <!-- Welcome Hero Banner -->
-    <div class="dashboard-hero">
-        <div class="hero-text-side">
-            <span class="hero-badge">🌿 Sprouts Box &bull; Control Center</span>
-            <h1 class="hero-title">Welcome back, {{ user.first_name|default:user.username }}!</h1>
-            <p class="hero-subtitle">Monitor live store inventory, customize farm produce, update site contact details, and manage customer experience.</p>
-        </div>
-        <div class="hero-actions-side">
-            <a href="{% url 'admin:store_product_add' %}" class="btn-hero primary">
-                <span class="btn-icon">+</span>
-                <span>Add Product</span>
-            </a>
-            <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-hero secondary">
-                <span class="btn-icon">⚙️</span>
-                <span>Site Customization</span>
-            </a>
-            <a href="{% url 'store:home' %}" target="_blank" class="btn-hero ghost">
-                <span>View Storefront</span>
-                <span class="btn-icon">↗</span>
-            </a>
-        </div>
-    </div>
+<div id="content-main">
 
-    <!-- Inventory Restock Alert Banner (Displays when items are out of stock) -->
+    <!-- ── Inventory Restock Alert Banner ──────────────────────────── -->
     {% if admin_stats.out_of_stock_products > 0 %}
-    <div class="inventory-alert-banner">
-        <div class="alert-icon-wrap">
-            <span class="alert-icon">⚠️</span>
+    <div class="sb-stock-alert-banner">
+        <div class="sb-alert-icon">⚠️</div>
+        <div class="sb-alert-content">
+            <div class="sb-alert-tag">Action Required &bull; Inventory Alert</div>
+            <h3 class="sb-alert-title">
+                {{ admin_stats.out_of_stock_products }} product{{ admin_stats.out_of_stock_products|pluralize }} currently out of stock
+            </h3>
+            <p class="sb-alert-desc">These items cannot be added to customer bags. Restock or bulk-update availability now.</p>
         </div>
-        <div class="alert-content-wrap">
-            <div class="alert-tag">ACTION REQUIRED &bull; INVENTORY ALERT</div>
-            <h3 class="alert-title">{{ admin_stats.out_of_stock_products }} product{{ admin_stats.out_of_stock_products|pluralize }} currently flagged as Out of Stock!</h3>
-            <p class="alert-desc">These items cannot be added to customer bags on the live website. Review inventory, restock harvests, or bulk update availability.</p>
-            {% if admin_stats.out_of_stock_list %}
-            <div class="alert-items-strip">
-                {% for item in admin_stats.out_of_stock_list %}
-                <span class="alert-item-pill">
-                    {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" class="pill-thumb">{% else %}🌱{% endif %}
-                    <span class="pill-name">{{ item.name }}</span>
-                    <a href="{% url 'admin:store_product_change' item.pk %}" class="pill-action" title="Edit product and restock">Restock ↗</a>
-                </span>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        <div class="alert-actions-wrap">
-            <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="btn-alert-cta">
-                <span>Manage Out-of-Stock</span>
-                <span>&rarr;</span>
-            </a>
-        </div>
+        <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="sb-alert-cta">
+            Manage Inventory →
+        </a>
     </div>
     {% endif %}
 
-    <!-- Live Store Metrics Bar -->
-    <div class="metrics-grid">
-        <!-- Total Products Metric -->
-        <div class="metric-card">
-            <div class="metric-header">
-                <span class="metric-title">TOTAL PRODUCTS</span>
-                <span class="metric-icon-wrap bg-emerald">🛍️</span>
-            </div>
-            <div class="metric-body">
-                <div class="metric-value">{{ admin_stats.total_products|default:"0" }}</div>
-                <div class="metric-subtext">Items in catalog</div>
-            </div>
-            <div class="metric-footer">
-                <a href="{% url 'admin:store_product_changelist' %}" class="metric-link">View all products &rarr;</a>
-            </div>
-        </div>
+    <!-- ── Welcome Hero ────────────────────────────────────────────── -->
+    <div class="sb-hero">
+        <div class="sb-hero-left">
+            <span class="sb-hero-badge">Welcome Back,</span>
+            <h1 class="sb-hero-title">{{ user.get_full_name|default:user.username }}!</h1>
+            <p class="sb-hero-desc">
+                Monitor live store inventory, customize farm produce, update site contact details, and manage customer experience.
+            </p>
 
-        <!-- In-Stock Items Metric -->
-        <div class="metric-card">
-            <div class="metric-header">
-                <span class="metric-title">IN STOCK &amp; READY</span>
-                <span class="metric-icon-wrap bg-green">
-                    <span class="pulse-ring"></span>
-                    🌱
+            <div class="sb-hero-meta">
+                <span class="sb-hero-date">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span id="sbHeroDate"></span>
                 </span>
+                <a href="{% url 'store:home' %}" target="_blank" class="sb-storefront-status">
+                    <span class="sb-storefront-dot"></span>
+                    Storefront Online
+                </a>
             </div>
-            <div class="metric-body">
-                <div class="metric-value text-green">{{ admin_stats.in_stock_products|default:"0" }}</div>
-                <div class="metric-subtext">Available for customers</div>
-            </div>
-            <div class="metric-footer">
-                <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=1" class="metric-link text-green">Filter in-stock &rarr;</a>
+
+            <div class="sb-hero-actions">
+                <a href="{% url 'admin:store_product_add' %}" class="btn-hero-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Product
+                </a>
+                <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-hero-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                    Site Customization
+                </a>
+                <a href="{% url 'store:home' %}" target="_blank" rel="noopener" class="btn-hero-ghost">
+                    View Storefront
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
             </div>
         </div>
 
-        <!-- Out of Stock Alert Metric -->
-        <div class="metric-card {% if admin_stats.out_of_stock_products > 0 %}card-warning-active{% endif %}">
-            <div class="metric-header">
-                <span class="metric-title">OUT OF STOCK</span>
-                <span class="metric-icon-wrap bg-amber">⚠️</span>
-            </div>
-            <div class="metric-body">
-                <div class="metric-value {% if admin_stats.out_of_stock_products > 0 %}text-amber{% else %}text-muted{% endif %}">
-                    {{ admin_stats.out_of_stock_products|default:"0" }}
-                </div>
-                <div class="metric-subtext">Items needing restock</div>
-            </div>
-            <div class="metric-footer">
-                <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="metric-link text-amber">Manage inventory &rarr;</a>
-            </div>
-        </div>
-
-        <!-- Categories Metric -->
-        <div class="metric-card">
-            <div class="metric-header">
-                <span class="metric-title">PRODUCT CATEGORIES</span>
-                <span class="metric-icon-wrap bg-blue">📁</span>
-            </div>
-            <div class="metric-body">
-                <div class="metric-value">{{ admin_stats.total_categories|default:"0" }}</div>
-                <div class="metric-subtext">Organized collections</div>
-            </div>
-            <div class="metric-footer">
-                <a href="{% url 'admin:store_category_changelist' %}" class="metric-link">Manage categories &rarr;</a>
-            </div>
+        <!-- Plant illustration -->
+        <div class="sb-hero-right">
+            <svg class="sb-hero-plant" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 180" width="160" height="180" fill="none">
+                <!-- Stem -->
+                <path d="M80 170 Q78 140 82 110 Q85 80 78 55" stroke="#3D8B60" stroke-width="3.5" stroke-linecap="round"/>
+                <!-- Main large left leaf -->
+                <path d="M78 55 Q45 35 30 55 Q50 75 78 65" fill="#2E7A50" opacity="0.85"/>
+                <!-- Large right leaf -->
+                <path d="M82 75 Q120 55 130 80 Q105 95 82 82" fill="#34A862" opacity="0.8"/>
+                <!-- Mid left leaf -->
+                <path d="M80 95 Q55 78 48 95 Q62 108 80 100" fill="#3DBF70" opacity="0.75"/>
+                <!-- Mid right leaf -->
+                <path d="M82 110 Q108 96 115 112 Q100 122 82 115" fill="#2E7A50" opacity="0.7"/>
+                <!-- Small leaf left -->
+                <path d="M79 130 Q62 118 60 130 Q68 138 79 133" fill="#4CD080" opacity="0.65"/>
+                <!-- Leaf veins -->
+                <path d="M78 55 Q55 48 30 55" stroke="#1B5C38" stroke-width="0.8" opacity="0.4"/>
+                <path d="M82 75 Q108 65 130 80" stroke="#1B5C38" stroke-width="0.8" opacity="0.4"/>
+                <!-- Small sprout circles at tip -->
+                <circle cx="76" cy="46" r="5" fill="#4CD080" opacity="0.9"/>
+                <circle cx="83" cy="42" r="3.5" fill="#34D399" opacity="0.85"/>
+                <circle cx="79" cy="38" r="2.5" fill="#6EE7B7" opacity="0.8"/>
+            </svg>
         </div>
     </div>
 
-    <!-- Main Dashboard Row: Recent Products & Management Cards -->
-    <div class="dashboard-columns">
-        <!-- Left Side: Recent Products Table + Quick Management -->
-        <div class="dashboard-left-col">
-            <!-- Recent Products Preview Card -->
-            <div class="content-card">
-                <div class="content-card-header">
-                    <div class="card-header-left">
-                        <span class="card-header-icon">🌿</span>
-                        <div>
-                            <h3 class="card-header-title">Recently Added Produce</h3>
-                            <p class="card-header-subtitle">Quick overview of recent farm inventory</p>
-                        </div>
+    <!-- ── Dashboard Two-Column Grid ───────────────────────────────── -->
+    <div class="sb-dashboard-grid">
+
+        <!-- ── LEFT COLUMN ──────────────────────────── -->
+        <div class="sb-dashboard-left">
+
+            <!-- Metrics 2x2 grid -->
+            <div class="sb-metrics-grid">
+
+                <!-- Total Products -->
+                <div class="sb-metric-card">
+                    <div class="sb-metric-top">
+                        <span class="sb-metric-label">Total Products</span>
+                        <div class="sb-metric-icon bg-emerald">📦</div>
                     </div>
-                    <div class="card-header-actions">
-                        <a href="{% url 'admin:store_product_add' %}" class="btn-table-header">+ Add Product</a>
-                        <a href="{% url 'admin:store_product_changelist' %}" class="btn-table-header secondary">View All</a>
+                    <div class="sb-metric-value">{{ admin_stats.total_products|default:"0" }}</div>
+                    <div class="sb-metric-sub">Items in catalog</div>
+                    <div class="sb-metric-footer">
+                        <a href="{% url 'admin:store_product_changelist' %}" class="sb-metric-link">View all products →</a>
                     </div>
                 </div>
 
-                <div class="card-table-wrapper">
-                    {% if admin_stats.recent_products %}
-                    <table class="modern-dashboard-table">
+                <!-- In Stock & Ready -->
+                <div class="sb-metric-card">
+                    <div class="sb-metric-top">
+                        <span class="sb-metric-label">In Stock &amp; Ready</span>
+                        <div class="sb-metric-icon bg-green">
+                            <div class="sb-pulse-ring">🌱</div>
+                        </div>
+                    </div>
+                    <div class="sb-metric-value text-green">{{ admin_stats.in_stock_products|default:"0" }}</div>
+                    <div class="sb-metric-sub">Available for customers</div>
+                    <div class="sb-metric-footer">
+                        <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=1" class="sb-metric-link text-green">Filter in-stock →</a>
+                    </div>
+                </div>
+
+                <!-- Out of Stock -->
+                <div class="sb-metric-card {% if admin_stats.out_of_stock_products > 0 %}card-warn{% endif %}">
+                    <div class="sb-metric-top">
+                        <span class="sb-metric-label">Out of Stock</span>
+                        <div class="sb-metric-icon bg-amber">⚠️</div>
+                    </div>
+                    <div class="sb-metric-value {% if admin_stats.out_of_stock_products > 0 %}text-amber{% else %}text-muted{% endif %}">
+                        {{ admin_stats.out_of_stock_products|default:"0" }}
+                    </div>
+                    <div class="sb-metric-sub">Items needing restock</div>
+                    <div class="sb-metric-footer">
+                        <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="sb-metric-link text-amber">Manage inventory →</a>
+                    </div>
+                </div>
+
+                <!-- Product Categories -->
+                <div class="sb-metric-card">
+                    <div class="sb-metric-top">
+                        <span class="sb-metric-label">Product Categories</span>
+                        <div class="sb-metric-icon bg-blue">📁</div>
+                    </div>
+                    <div class="sb-metric-value">{{ admin_stats.total_categories|default:"0" }}</div>
+                    <div class="sb-metric-sub">Organized collections</div>
+                    <div class="sb-metric-footer">
+                        <a href="{% url 'admin:store_category_changelist' %}" class="sb-metric-link">Manage categories →</a>
+                    </div>
+                </div>
+
+            </div><!-- /.sb-metrics-grid -->
+
+            <!-- Recent Products Table -->
+            {% if admin_stats.recent_products %}
+            <div class="sb-card">
+                <div class="sb-card-header">
+                    <div class="sb-card-title">
+                        <span class="sb-card-title-icon">🌿</span>
+                        Recently Added Produce
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <a href="{% url 'admin:store_product_add' %}" class="btn-hero-primary" style="padding:6px 14px;font-size:0.8rem;">+ Add Product</a>
+                        <a href="{% url 'admin:store_product_changelist' %}" class="sb-card-link">View All →</a>
+                    </div>
+                </div>
+                <div class="sb-card-body">
+                    <table style="width:100%;border-collapse:collapse;">
                         <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Unit</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Action</th>
+                            <tr style="background:#F7FAF8;border-bottom:1px solid #E2EBE6;">
+                                <th style="padding:10px 16px;text-align:left;font-size:0.72rem;font-weight:700;color:#7A9E8C;text-transform:uppercase;letter-spacing:0.5px;">Item</th>
+                                <th style="padding:10px 16px;text-align:left;font-size:0.72rem;font-weight:700;color:#7A9E8C;text-transform:uppercase;letter-spacing:0.5px;">Category</th>
+                                <th style="padding:10px 16px;text-align:left;font-size:0.72rem;font-weight:700;color:#7A9E8C;text-transform:uppercase;letter-spacing:0.5px;">Price</th>
+                                <th style="padding:10px 16px;text-align:left;font-size:0.72rem;font-weight:700;color:#7A9E8C;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
+                                <th style="padding:10px 16px;text-align:right;font-size:0.72rem;font-weight:700;color:#7A9E8C;text-transform:uppercase;letter-spacing:0.5px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for product in admin_stats.recent_products %}
-                            <tr>
-                                <td>
-                                    <div class="table-product-cell">
+                            <tr style="border-bottom:1px solid #F3F8F5;transition:background 0.1s;" onmouseover="this.style.background='#FAFDFB'" onmouseout="this.style.background=''">
+                                <td style="padding:11px 16px;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
                                         {% if product.image %}
-                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-mini-thumb">
+                                            <div class="admin-table-thumb-wrap">
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="admin-table-thumb">
+                                                <div class="admin-thumb-hover-preview">
+                                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                                    <div class="thumb-hover-info">
+                                                        <div class="hover-title">{{ product.name }}</div>
+                                                        <div class="hover-meta">₹{{ product.price }} / {{ product.unit }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         {% else %}
-                                            <div class="product-mini-thumb placeholder">🌱</div>
+                                            <div class="admin-table-thumb-placeholder">🌱</div>
                                         {% endif %}
-                                        <div class="product-info-wrap">
-                                            <span class="product-name-txt">{{ product.name }}</span>
-                                            <span class="product-slug-txt">{{ product.slug }}</span>
+                                        <div>
+                                            <div style="font-size:0.87rem;font-weight:600;color:#1B3829;">{{ product.name }}</div>
+                                            <div style="font-size:0.74rem;color:#7A9E8C;">{{ product.slug }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="category-pill">{{ product.category.name }}</span>
+                                <td style="padding:11px 16px;">
+                                    <span style="background:#E8F3EE;color:#2D5A3D;font-size:0.75rem;font-weight:600;padding:3px 9px;border-radius:20px;">{{ product.category.name }}</span>
                                 </td>
-                                <td>
-                                    <span class="table-price">₹{{ product.price }}</span>
-                                </td>
-                                <td>
-                                    <span class="table-unit">{{ product.unit }}</span>
-                                </td>
-                                <td>
+                                <td style="padding:11px 16px;font-size:0.87rem;font-weight:700;color:#059669;">₹{{ product.price }}</td>
+                                <td style="padding:11px 16px;">
                                     {% if product.is_available %}
-                                        <span class="status-pill in-stock">
-                                            <span class="status-dot green"></span> In Stock
-                                        </span>
+                                        <span class="status-badge in-stock"><span class="badge-dot green"></span>In Stock</span>
                                     {% else %}
-                                        <span class="status-pill out-of-stock">
-                                            <span class="status-dot red"></span> Out of Stock
-                                        </span>
+                                        <span class="status-badge out-of-stock"><span class="badge-dot red"></span>Out of Stock</span>
                                     {% endif %}
                                 </td>
-                                <td style="text-align: right;">
-                                    <a href="{% url 'admin:store_product_change' product.pk %}" class="btn-row-edit" title="Edit Product">
-                                        ✏️ Edit
-                                    </a>
+                                <td style="padding:11px 16px;text-align:right;">
+                                    <a href="{% url 'admin:store_product_change' product.pk %}" class="action-btn edit-btn">✏️ Edit</a>
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% else %}
-                    <div class="empty-state-box">
-                        <div class="empty-icon">🌱</div>
-                        <h4>No products listed yet</h4>
-                        <p>Get started by adding your first fresh organic product to the store!</p>
-                        <a href="{% url 'admin:store_product_add' %}" class="btn-hero primary">+ Add First Product</a>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
+            {% endif %}
 
-            <!-- Quick Access Management Grid -->
-            <div class="quick-cards-grid">
-                <!-- Products Card -->
-                <div class="action-card">
-                    <div class="action-card-top">
-                        <span class="action-card-emoji">🛍️</span>
-                        <div>
-                            <h4>Products Catalog</h4>
-                            <p>Add new harvests, update prices, change inventory status.</p>
-                        </div>
-                    </div>
-                    <div class="action-card-btns">
-                        <a href="{% url 'admin:store_product_add' %}" class="btn-action primary">+ Add Product</a>
-                        <a href="{% url 'admin:store_product_changelist' %}" class="btn-action secondary">Manage All</a>
-                    </div>
-                </div>
+        </div><!-- /.sb-dashboard-left -->
 
-                <!-- Categories Card -->
-                <div class="action-card">
-                    <div class="action-card-top">
-                        <span class="action-card-emoji">📁</span>
-                        <div>
-                            <h4>Produce Categories</h4>
-                            <p>Group produce into Microgreens, Sprouts, Veggies, Combos.</p>
-                        </div>
-                    </div>
-                    <div class="action-card-btns">
-                        <a href="{% url 'admin:store_category_add' %}" class="btn-action primary">+ Add Category</a>
-                        <a href="{% url 'admin:store_category_changelist' %}" class="btn-action secondary">Manage All</a>
-                    </div>
-                </div>
+        <!-- ── RIGHT COLUMN ─────────────────────────── -->
+        <div class="sb-dashboard-right">
 
-                <!-- Site Settings Card -->
-                <div class="action-card highlight-card">
-                    <div class="action-card-top">
-                        <span class="action-card-emoji">⚙️</span>
-                        <div>
-                            <h4>Site Customization</h4>
-                            <p>Update phone numbers, email, farm location &amp; social links.</p>
-                        </div>
+            <!-- Recent Activities -->
+            <div class="sb-card">
+                <div class="sb-card-header">
+                    <div class="sb-card-title">
+                        <span class="sb-card-title-icon">⚡</span>
+                        Recent Activities
                     </div>
-                    <div class="action-card-btns">
-                        <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-action highlight">✏️ Edit Settings &amp; Info</a>
-                    </div>
+                    <a href="{% url 'admin:index' %}" class="sb-card-link">View all →</a>
                 </div>
-            </div>
-        </div>
-
-        <!-- Right Side: Store Summary & Active Contact Info -->
-        <div class="dashboard-right-col">
-            <!-- Site Contact Quick Card -->
-            <div class="content-card sidebar-widget">
-                <div class="widget-header">
-                    <span class="widget-icon">📞</span>
-                    <h4>Current Contact Info</h4>
-                </div>
-                <div class="widget-content">
-                    <div class="contact-preview-row">
-                        <span class="label">Phone:</span>
-                        <span class="value">{{ site_settings.phone_number|default:"+91 98765 43210" }}</span>
-                    </div>
-                    <div class="contact-preview-row">
-                        <span class="label">Hours:</span>
-                        <span class="value-sub">{{ site_settings.phone_hours|default:"Mon – Sat: 8:00 AM – 8:00 PM" }}</span>
-                    </div>
-                    <div class="contact-preview-row">
-                        <span class="label">Email:</span>
-                        <span class="value">{{ site_settings.email_address|default:"hello@sproutsbox.in" }}</span>
-                    </div>
-                    <div class="contact-preview-row">
-                        <span class="label">Location:</span>
-                        <span class="value-sub">{{ site_settings.address_line1|default:"Sprouts Box Eco Farm" }}<br>{{ site_settings.address_line2|default:"Kerala, India" }}</span>
-                    </div>
-                    <a href="{% url 'admin:store_sitesettings_changelist' %}" class="btn-widget-action">
-                        <span>✏️ Update Details</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Categories Overview Widget -->
-            <div class="content-card sidebar-widget">
-                <div class="widget-header">
-                    <span class="widget-icon">🏷️</span>
-                    <h4>Active Categories</h4>
-                </div>
-                <div class="widget-content">
-                    {% if admin_stats.categories_list %}
-                    <ul class="widget-category-list">
-                        {% for cat in admin_stats.categories_list %}
-                        <li>
-                            <a href="{% url 'admin:store_product_changelist' %}?category__id__exact={{ cat.pk }}" class="widget-cat-item">
-                                <span class="cat-name">{{ cat.name }}</span>
-                                <span class="cat-count">{{ cat.num_products }} items</span>
-                            </a>
+                <div class="sb-card-body">
+                    {% load log %}
+                    {% get_admin_log 10 as admin_log for_user user %}
+                    {% if admin_log %}
+                    <ul class="sb-activity-list">
+                        {% for entry in admin_log %}
+                        <li class="sb-activity-item">
+                            <span class="sb-activity-tag
+                                {% if entry.is_addition %}tag-add{% endif %}
+                                {% if entry.is_change %}tag-edit{% endif %}
+                                {% if entry.is_deletion %}tag-delete{% endif %}">
+                                {% if entry.is_addition %}+{% endif %}
+                                {% if entry.is_change %}✎{% endif %}
+                                {% if entry.is_deletion %}✕{% endif %}
+                            </span>
+                            <div class="sb-activity-content">
+                                {% if entry.is_deletion or not entry.get_admin_url %}
+                                    <div class="sb-activity-name">{{ entry.object_repr }}</div>
+                                {% else %}
+                                    <a href="{{ entry.get_admin_url }}" class="sb-activity-name" style="text-decoration:none;color:inherit;">{{ entry.object_repr }}</a>
+                                {% endif %}
+                                <div class="sb-activity-meta">
+                                    {% if entry.is_addition %}Product added{% endif %}
+                                    {% if entry.is_change %}Product updated{% endif %}
+                                    {% if entry.is_deletion %}Item removed{% endif %}
+                                </div>
+                            </div>
+                            <span class="sb-activity-time">{{ entry.action_time|timesince }} ago</span>
                         </li>
                         {% endfor %}
                     </ul>
                     {% else %}
-                    <p class="empty-text">No categories created yet.</p>
+                    <div style="padding:24px 20px;text-align:center;color:#A3BDB1;font-size:0.85rem;">
+                        No recent activity records.
+                    </div>
                     {% endif %}
-                    <a href="{% url 'admin:store_category_add' %}" class="btn-widget-action secondary">
-                        <span>+ Add Category</span>
-                    </a>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+
+            <!-- Quick Actions -->
+            <div class="sb-card">
+                <div class="sb-card-header">
+                    <div class="sb-card-title">
+                        <span class="sb-card-title-icon">⚡</span>
+                        Quick Actions
+                    </div>
+                </div>
+                <div class="sb-card-body">
+                    <ul class="sb-quick-list">
+                        <li class="sb-quick-item">
+                            <a href="{% url 'admin:store_product_add' %}" class="sb-quick-link">
+                                <span class="sb-quick-icon icon-green">➕</span>
+                                Add Product
+                                <span class="sb-quick-chevron">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="sb-quick-item">
+                            <a href="{% url 'admin:store_category_changelist' %}" class="sb-quick-link">
+                                <span class="sb-quick-icon icon-blue">📁</span>
+                                Manage Categories
+                                <span class="sb-quick-chevron">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="sb-quick-item">
+                            <a href="{% url 'admin:store_sitesettings_changelist' %}" class="sb-quick-link">
+                                <span class="sb-quick-icon icon-orange">⚙️</span>
+                                Customize Site
+                                <span class="sb-quick-chevron">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="sb-quick-item">
+                            <a href="{% url 'store:home' %}" target="_blank" class="sb-quick-link">
+                                <span class="sb-quick-icon icon-purple">↗️</span>
+                                View Storefront
+                                <span class="sb-quick-chevron">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Low Stock Alerts -->
+            <div class="sb-card">
+                <div class="sb-low-stock-header">
+                    <div class="sb-low-stock-title">
+                        <span>⚠️</span>
+                        Low Stock Alerts
+                    </div>
+                    {% if admin_stats.out_of_stock_products > 0 %}
+                    <a href="{% url 'admin:store_product_changelist' %}?is_available__exact=0" class="sb-card-link">View all →</a>
+                    {% endif %}
+                </div>
+                <div class="sb-low-stock-body">
+                    {% if admin_stats.out_of_stock_products > 0 %}
+                        {% for item in admin_stats.out_of_stock_list %}
+                        <div class="sb-stock-alert-item">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="sb-stock-thumb">
+                            {% else %}
+                                <div class="sb-stock-placeholder">🌱</div>
+                            {% endif %}
+                            <div class="sb-stock-info">
+                                <div class="sb-stock-name">{{ item.name }}</div>
+                                <div class="sb-stock-cat">{{ item.category.name }}</div>
+                            </div>
+                            <a href="{% url 'admin:store_product_change' item.pk %}" class="sb-restock-btn">Restock ↗</a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="sb-all-good">
+                            <div class="sb-all-good-icon">🌿</div>
+                            <div class="sb-all-good-title">No low stock items</div>
+                            <div class="sb-all-good-sub">All products are well stocked.</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Active Categories -->
+            {% if admin_stats.categories_list %}
+            <div class="sb-card">
+                <div class="sb-card-header">
+                    <div class="sb-card-title">
+                        <span class="sb-card-title-icon">🏷️</span>
+                        Active Categories
+                    </div>
+                    <a href="{% url 'admin:store_category_add' %}" class="sb-card-link">+ Add →</a>
+                </div>
+                <div class="sb-card-body">
+                    {% for cat in admin_stats.categories_list %}
+                    <a href="{% url 'admin:store_product_changelist' %}?category__id__exact={{ cat.pk }}"
+                       style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid #F3F8F5;text-decoration:none;color:#1B3829;font-size:0.85rem;font-weight:600;transition:background 0.1s;"
+                       onmouseover="this.style.background='#FAFDFB'" onmouseout="this.style.background=''">
+                        <span>{{ cat.name }}</span>
+                        <span style="background:#E8F3EE;color:#065F46;padding:2px 9px;border-radius:20px;font-size:0.74rem;font-weight:700;">{{ cat.num_products }} items</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div><!-- /.sb-dashboard-right -->
+    </div><!-- /.sb-dashboard-grid -->
+
+</div><!-- /#content-main -->
+
+<script>
+// Set live date in the hero
+(function() {
+    const el = document.getElementById('sbHeroDate');
+    if (el) {
+        const d = new Date();
+        el.textContent = d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    }
+})();
+</script>
 {% endblock %}
 
-{% block sidebar %}
-<div id="content-related" class="modern-recent-actions">
-    <div class="module" id="recent-actions-module">
-        <div class="recent-actions-header">
-            <h3>⚡ {% translate 'Recent Activities' %}</h3>
-        </div>
-        {% load log %}
-        {% get_admin_log 8 as admin_log for_user user %}
-        {% if not admin_log %}
-        <p style="padding: 16px 20px; color: #64748b; font-size: 0.88rem;">{% translate 'No recent activity records.' %}</p>
-        {% else %}
-        <ul class="actionlist modern-actionlist">
-        {% for entry in admin_log %}
-        <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
-            <div class="action-item-wrap">
-                <span class="action-type-tag {% if entry.is_addition %}tag-add{% elif entry.is_change %}tag-edit{% elif entry.is_deletion %}tag-delete{% endif %}">
-                    {% if entry.is_addition %}ADD{% elif entry.is_change %}EDIT{% elif entry.is_deletion %}DEL{% endif %}
-                </span>
-                <div class="action-item-content">
-                    {% if entry.is_deletion or not entry.get_admin_url %}
-                        <span class="action-item-title">{{ entry.object_repr }}</span>
-                    {% else %}
-                        <a href="{{ entry.get_admin_url }}" class="action-item-link">{{ entry.object_repr }}</a>
-                    {% endif %}
-                    <span class="action-item-meta">
-                        {% if entry.content_type %}
-                            {{ entry.content_type.name|capfirst }}
-                        {% endif %}
-                    </span>
-                </div>
-            </div>
-        </li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
-</div>
-{% endblock %}
+{% block sidebar %}{% endblock %}

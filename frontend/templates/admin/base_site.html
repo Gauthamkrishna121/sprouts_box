@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% load i18n %}
 
 {% block title %}{{ title }} | Sprouts Box Control Center{% endblock %}
 
@@ -6,40 +7,156 @@
 {{ block.super }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/static/css/admin_custom.css">
-<script src="https://unpkg.com/feather-icons"></script>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="https://unpkg.com/feather-icons" defer></script>
 {% endblock %}
 
 {% block branding %}
-<div class="admin-branding-wrap">
-    <a href="{% url 'admin:index' %}" class="admin-logo-link">
-        <div class="admin-brand-icon">🌱</div>
-        <div class="admin-title-box">
-            <span class="admin-title-text">Sprouts Box</span>
-            <span class="admin-subtitle-text">Control Center &bull; v2.0</span>
-        </div>
-    </a>
-    <div class="admin-top-actions">
-        <span class="system-status-pill">
-            <span class="pulse-dot"></span>
-            <span>Live &amp; Connected</span>
+<div class="sb-topbar-inner">
+    <!-- Search -->
+    <div class="sb-search-wrap">
+        <span class="sb-search-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </span>
-        <a href="{% url 'admin:store_product_add' %}" class="quick-add-btn">
-            <span>+ Add Product</span>
-        </a>
-        <a href="{% url 'store:home' %}" target="_blank" class="live-site-badge">
-            <span>View Live Website</span>
-            <span class="arrow-up-right">↗</span>
-        </a>
+        <input type="text" class="sb-search-input" id="adminGlobalSearch" placeholder="Search products, categories, orders…" autocomplete="off">
+    </div>
+
+    <!-- Right actions -->
+    <div class="sb-topbar-right">
+        <!-- Notifications -->
+        <button class="tb-icon-btn tb-notif-btn" id="tbNotifBtn" title="Notifications" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            {% if admin_stats.pending_orders %}
+            <span class="tb-notif-dot"></span>
+            {% endif %}
+        </button>
+
+        <!-- User pill -->
+        <div class="sb-user-pill" id="tbUserPill">
+            <div class="sb-user-avatar">{{ user.username|first|upper }}</div>
+            <span class="sb-user-name">{{ user.get_full_name|default:user.username }}</span>
+            <span class="sb-user-chevron">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+        </div>
+
+        <!-- User dropdown -->
+        <div class="tb-user-dropdown" id="tbUserDropdown">
+            <div class="tb-dropdown-header">
+                <div class="tb-dropdown-avatar">{{ user.username|first|upper }}</div>
+                <div>
+                    <div class="tb-dropdown-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="tb-dropdown-role">Administrator</div>
+                </div>
+            </div>
+            <div class="tb-dropdown-divider"></div>
+            <a href="{% url 'admin:password_change' %}" class="tb-dropdown-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Change Password
+            </a>
+            <a href="{% url 'admin:logout' %}" class="tb-dropdown-item danger">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+            </a>
+        </div>
     </div>
 </div>
+
+<style>
+/* Topbar inline additions */
+.tb-user-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(var(--tb-height) + 4px);
+    right: 12px;
+    background: #FFFFFF;
+    border: 1px solid #DDE8E3;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    min-width: 220px;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.tb-user-dropdown.open { display: block; }
+
+.tb-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #F7FAF8;
+}
+
+.tb-dropdown-avatar {
+    width: 36px;
+    height: 36px;
+    background: #19312A;
+    color: #FFFFFF;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.tb-dropdown-name { font-size: 0.87rem; font-weight: 700; color: #0D1F19; }
+.tb-dropdown-role { font-size: 0.74rem; color: #7A9E8C; }
+.tb-dropdown-divider { height: 1px; background: #E2EBE6; }
+
+.tb-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1B3829;
+    text-decoration: none;
+    transition: background 0.12s ease;
+}
+
+.tb-dropdown-item:hover { background: #F3F8F5; color: #0D1F19; }
+.tb-dropdown-item.danger { color: #9F1239; }
+.tb-dropdown-item.danger:hover { background: #FFF1F2; }
+</style>
+
 <script>
+(function() {
+    // User dropdown toggle
+    const pill = document.getElementById('tbUserPill');
+    const dropdown = document.getElementById('tbUserDropdown');
+    if (pill && dropdown) {
+        pill.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('open');
+        });
+    }
+
+    // Global search — redirect to product search
+    const searchInput = document.getElementById('adminGlobalSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && this.value.trim()) {
+                window.location.href = '/admin/store/product/?q=' + encodeURIComponent(this.value.trim());
+            }
+        });
+    }
+
+    // Init feather icons
     document.addEventListener('DOMContentLoaded', function() {
-        if (typeof feather !== 'undefined') {
-            feather.replace();
-        }
+        if (typeof feather !== 'undefined') feather.replace();
     });
+})();
 </script>
 {% endblock %}
-

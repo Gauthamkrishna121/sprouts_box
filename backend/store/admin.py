@@ -1,7 +1,9 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
 from .models import Category, Product, SiteSettings, Order, OrderItem
 
 @admin.register(Category)
@@ -257,17 +259,42 @@ class OrderAdmin(admin.ModelAdmin):
         'formatted_total',
         'payment_method_badge',
         'status_badge',
+        'delivery_quick_action',
         'created_at',
         'order_actions'
     )
     list_filter = ('status', 'payment_method', 'created_at')
     search_fields = ('order_number', 'full_name', 'phone_number', 'email', 'delivery_address')
-    readonly_fields = ('order_number', 'created_at', 'updated_at', 'subtotal', 'shipping_fee', 'total_amount')
+    readonly_fields = (
+        'order_number',
+        'delivery_pipeline_status',
+        'created_at',
+        'updated_at',
+        'subtotal',
+        'shipping_fee',
+        'total_amount'
+    )
     inlines = [OrderItemInline]
     list_per_page = 25
     ordering = ('-created_at',)
+    actions = [
+        'mark_as_confirmed',
+        'mark_as_out_for_delivery',
+        'mark_as_delivered',
+        'mark_as_cancelled',
+        'mark_as_pending',
+    ]
+
+    class Media:
+        js = ('js/admin_order_status.js',)
 
     fieldsets = (
+        ('🚚 Live Delivery Pipeline', {
+            'fields': (
+                'delivery_pipeline_status',
+            ),
+            'description': 'Live pipeline tracker. Click any stage to instantly transition order status.'
+        }),
         ('📦 Order Summary', {
             'fields': (
                 ('order_number', 'status'),
@@ -287,6 +314,72 @@ class OrderAdmin(admin.ModelAdmin):
         }),
     )
 
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<int:order_id>/quick-status/<str:new_status>/',
+                self.admin_site.admin_view(self.quick_status_change),
+                name='store_order_quick_status',
+            ),
+        ]
+        return custom_urls + urls
+
+    def quick_status_change(self, request, order_id, new_status):
+        if not self.has_change_permission(request):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied
+        valid_statuses = dict(Order.STATUS_CHOICES)
+        if new_status in valid_statuses:
+            order = get_object_or_404(Order, pk=order_id)
+            old_label = order.get_status_display()
+            order.status = new_status
+            order.save(update_fields=['status', 'updated_at'])
+            new_label = order.get_status_display()
+            self.message_user(
+                request,
+                f"Order #{order.order_number} status updated: {old_label} ➔ {new_label}.",
+                messages.SUCCESS
+            )
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('ajax'):
+                return JsonResponse({
+                    'success': True,
+                    'order_id': order.pk,
+                    'order_number': order.order_number,
+                    'status': new_status,
+                    'status_label': new_label,
+                })
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return HttpResponseRedirect(referer)
+        return HttpResponseRedirect(reverse('admin:store_order_changelist'))
+
+    @admin.action(description="📋 Mark selected orders as Confirmed")
+    def mark_as_confirmed(self, request, queryset):
+        count = queryset.update(status='confirmed')
+        self.message_user(request, f"Successfully marked {count} order(s) as Confirmed.")
+
+    @admin.action(description="🚚 Mark selected orders as Out for Delivery")
+    def mark_as_out_for_delivery(self, request, queryset):
+        count = queryset.update(status='out_for_delivery')
+        self.message_user(request, f"Successfully marked {count} order(s) as Out for Delivery.")
+
+    @admin.action(description="📦 Mark selected orders as Delivered")
+    def mark_as_delivered(self, request, queryset):
+        count = queryset.update(status='delivered')
+        self.message_user(request, f"Successfully marked {count} order(s) as Delivered.")
+
+    @admin.action(description="❌ Mark selected orders as Cancelled")
+    def mark_as_cancelled(self, request, queryset):
+        count = queryset.update(status='cancelled')
+        self.message_user(request, f"Successfully marked {count} order(s) as Cancelled.")
+
+    @admin.action(description="⏳ Mark selected orders as Pending")
+    def mark_as_pending(self, request, queryset):
+        count = queryset.update(status='pending')
+        self.message_user(request, f"Successfully marked {count} order(s) as Pending.")
+
     def items_count(self, obj):
         count = obj.items.count()
         return format_html('<span class="badge-count">{} items</span>', count)
@@ -303,25 +396,118 @@ class OrderAdmin(admin.ModelAdmin):
 
     def status_badge(self, obj):
         colors = {
-            'pending': ('#fef3c7', '#92400e', '#fde68a'),
-            'confirmed': ('#e0f2fe', '#075985', '#bae6fd'),
-            'out_for_delivery': ('#ede9fe', '#5b21b6', '#ddd6fe'),
-            'delivered': ('#dcfce7', '#166534', '#bbf7d0'),
-            'cancelled': ('#fee2e2', '#991b1b', '#fecaca'),
+            'pending': ('#fef3c7', '#92400e', '#fde68a', '⏳'),
+            'confirmed': ('#e0f2fe', '#075985', '#bae6fd', '📋'),
+            'out_for_delivery': ('#ede9fe', '#5b21b6', '#ddd6fe', '🚚'),
+            'delivered': ('#dcfce7', '#166534', '#bbf7d0', '📦'),
+            'cancelled': ('#fee2e2', '#991b1b', '#fecaca', '❌'),
         }
-        bg, text, border = colors.get(obj.status, ('#f3f4f6', '#374151', '#e5e7eb'))
+        bg, text, border, icon = colors.get(obj.status, ('#f3f4f6', '#374151', '#e5e7eb', '•'))
         label = dict(Order.STATUS_CHOICES).get(obj.status, obj.status)
+
+        options_html = []
+        for code, name in Order.STATUS_CHOICES:
+            active_class = "order-status-opt current" if code == obj.status else "order-status-opt"
+            bullet = "✓ " if code == obj.status else ""
+            url = reverse('admin:store_order_quick_status', args=[obj.pk, code])
+            options_html.append(
+                f'<a href="{url}" class="{active_class}" data-order-id="{obj.pk}" data-status="{code}">{bullet}{name}</a>'
+            )
+
+        menu_items = "".join(options_html)
+
         return format_html(
-            '<span class="status-badge" style="background:{};color:{};border:1px solid {};font-weight:600;">{}</span>',
-            bg, text, border, label
+            '<div class="order-status-wrapper" id="order-status-wrapper-{}">'
+            '  <button type="button" class="order-status-pill-btn" style="background:{};color:{};border:1.5px solid {};" title="Click to change status" data-order-id="{}">'
+            '    <span class="status-icon">{}</span>'
+            '    <span class="status-name">{}</span>'
+            '    <span class="status-chevron">▾</span>'
+            '  </button>'
+            '  <div class="order-status-popover">'
+            '    <div class="popover-header">Update Delivery Status</div>'
+            '    {}'
+            '  </div>'
+            '</div>',
+            obj.pk, bg, text, border, obj.pk, icon, label, mark_safe(menu_items)
         )
     status_badge.short_description = "Status"
+
+    def delivery_quick_action(self, obj):
+        next_actions = {
+            'pending': ('confirmed', '👉 Confirm', 'btn-step-confirm', 'Confirm and prepare order'),
+            'confirmed': ('out_for_delivery', '🚚 Dispatch', 'btn-step-dispatch', 'Hand over to delivery partner'),
+            'out_for_delivery': ('delivered', '✓ Mark Delivered', 'btn-step-delivered', 'Mark order successfully delivered'),
+            'delivered': (None, '✓ Delivered', 'btn-step-complete', 'Order fulfilled'),
+            'cancelled': ('pending', '↺ Reopen', 'btn-step-reopen', 'Reopen cancelled order'),
+        }
+        target_status, label, css_class, title = next_actions.get(
+            obj.status, (None, '-', 'btn-step-complete', '')
+        )
+
+        if target_status:
+            url = reverse('admin:store_order_quick_status', args=[obj.pk, target_status])
+            return format_html(
+                '<a href="{}" class="order-step-btn {}" title="{}" data-order-id="{}" data-target-status="{}">'
+                '  <span>{}</span>'
+                '</a>',
+                url, css_class, title, obj.pk, target_status, label
+            )
+        else:
+            return format_html(
+                '<span class="order-step-btn {}">{}</span>',
+                css_class, label
+            )
+    delivery_quick_action.short_description = "Quick Action"
+
+    def delivery_pipeline_status(self, obj):
+        if not obj.pk:
+            return '-'
+        stages = [
+            ('pending', 'Pending', '⏳'),
+            ('confirmed', 'Confirmed', '📋'),
+            ('out_for_delivery', 'Out for Delivery', '🚚'),
+            ('delivered', 'Delivered', '📦'),
+        ]
+        status_order = ['pending', 'confirmed', 'out_for_delivery', 'delivered']
+        current_idx = status_order.index(obj.status) if obj.status in status_order else -1
+        is_cancelled = (obj.status == 'cancelled')
+
+        html = ['<div class="delivery-pipeline-tracker">']
+        for idx, (code, title, icon) in enumerate(stages):
+            if is_cancelled:
+                step_class = "pipeline-step cancelled"
+            elif current_idx >= idx:
+                step_class = "pipeline-step completed" if current_idx > idx else "pipeline-step active"
+            else:
+                step_class = "pipeline-step pending"
+            
+            quick_url = reverse('admin:store_order_quick_status', args=[obj.pk, code])
+            html.append(
+                f'<a href="{quick_url}" class="{step_class}" title="Click to set status to {title}">'
+                f'  <span class="step-icon">{icon}</span>'
+                f'  <span class="step-title">{title}</span>'
+                f'</a>'
+            )
+            if idx < len(stages) - 1:
+                html.append('<span class="pipeline-connector">➔</span>')
+
+        if is_cancelled:
+            reopen_url = reverse('admin:store_order_quick_status', args=[obj.pk, 'pending'])
+            html.append('<span class="pipeline-cancelled-tag">❌ Order Cancelled</span>')
+            html.append(f'<a href="{reopen_url}" class="pipeline-reopen-btn">↺ Reopen Order</a>')
+        else:
+            cancel_url = reverse('admin:store_order_quick_status', args=[obj.pk, 'cancelled'])
+            html.append(f'<a href="{cancel_url}" class="pipeline-cancel-btn" title="Cancel this order">✕ Cancel Order</a>')
+
+        html.append('</div>')
+        return mark_safe("".join(html))
+    delivery_pipeline_status.short_description = "Live Delivery Pipeline"
 
     def order_actions(self, obj):
         edit_url = reverse('admin:store_order_change', args=[obj.pk])
         return format_html(
             '<div class="admin-row-actions">'
-            '  <a href="{}" class="action-btn edit-btn" title="View/Edit Order">👁️ View Order</a>'
+            '  <a href="{}" class="action-btn edit-btn" title="View/Edit Order Details">👁️ View Order</a>'
             '</div>',
             edit_url
         )
