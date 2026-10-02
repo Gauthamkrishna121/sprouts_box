@@ -2043,6 +2043,427 @@ ul.errorlist li { color: #DC2626 !important; font-size: 0.8rem !important; }
     font-weight: 700;
 }
 
+/* ── Interactive Order Delivery Status Dropdown Pill ── */
+#result_list td.field-status_badge,
+#result_list td.field-delivery_quick_action {
+    overflow: visible !important;
+    white-space: nowrap !important;
+}
+
+.order-status-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.order-status-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: var(--font);
+    cursor: pointer;
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1.5px solid #FDE68A;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.order-status-pill-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    filter: brightness(0.96);
+}
+
+.order-status-pill-btn.active {
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+.order-status-pill-btn .status-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.order-status-pill-btn .status-name {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.order-status-pill-btn .status-chevron {
+    font-size: 0.7rem;
+    opacity: 0.65;
+    margin-left: 1px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.order-status-pill-btn.active .status-chevron {
+    transform: rotate(180deg);
+}
+
+/* ── Status Popover Menu ── */
+.order-status-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 200px;
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px -4px rgba(13, 31, 25, 0.14), 0 4px 10px -2px rgba(13, 31, 25, 0.06);
+    padding: 6px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s ease;
+    pointer-events: none;
+}
+
+.order-status-popover.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.order-status-popover.drop-up {
+    top: auto;
+    bottom: calc(100% + 6px);
+    transform: translateY(6px) scale(0.98);
+}
+
+.order-status-popover.drop-up.show {
+    transform: translateY(0) scale(1);
+}
+
+.order-status-popover .popover-header {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-400);
+    padding: 6px 10px 6px;
+    border-bottom: 1px solid #EDF2EF;
+    margin-bottom: 4px;
+}
+
+.order-status-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-700);
+    text-decoration: none !important;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.order-status-opt:hover {
+    background: #F0FDF4;
+    color: #166534;
+}
+
+.order-status-opt.current {
+    background: #ECFDF5;
+    color: #065F46;
+    font-weight: 700;
+}
+
+.order-status-opt.is-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ── 1-Click Delivery Step Action Buttons in Changelist ── */
+.order-step-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.order-step-btn.btn-step-confirm {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    border: 1.5px solid #BFDBFE;
+}
+.order-step-btn.btn-step-confirm:hover {
+    background: #1D4ED8;
+    color: #FFFFFF;
+    border-color: #1D4ED8;
+    box-shadow: 0 3px 8px rgba(29, 78, 216, 0.28);
+    transform: translateY(-1px);
+}
+
+.order-step-btn.btn-step-dispatch {
+    background: #F5F3FF;
+    color: #6D28D9;
+    border: 1.5px solid #DDD6FE;
+}
+.order-step-btn.btn-step-dispatch:hover {
+    background: #6D28D9;
+    color: #FFFFFF;
+    border-color: #6D28D9;
+    box-shadow: 0 3px 8px rgba(109, 40, 217, 0.28);
+    transform: translateY(-1px);
+}
+
+.order-step-btn.btn-step-delivered {
+    background: #ECFDF5;
+    color: #047857;
+    border: 1.5px solid #A7F3D0;
+}
+.order-step-btn.btn-step-delivered:hover {
+    background: #047857;
+    color: #FFFFFF;
+    border-color: #047857;
+    box-shadow: 0 3px 8px rgba(4, 120, 87, 0.28);
+    transform: translateY(-1px);
+}
+
+.order-step-btn.btn-step-complete {
+    background: #F3F8F5;
+    color: #059669;
+    border: 1.5px solid #D1FAE5;
+    cursor: default;
+    opacity: 0.9;
+}
+
+.order-step-btn.btn-step-reopen {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1.5px solid #FECACA;
+}
+.order-step-btn.btn-step-reopen:hover {
+    background: #DC2626;
+    color: #FFFFFF;
+    border-color: #DC2626;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.28);
+    transform: translateY(-1px);
+}
+
+.order-step-btn.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    transform: scale(0.97);
+}
+
+/* Flash animation when row is updated via live AJAX */
+@keyframes sbRowFlash {
+    0% { background-color: #DCFCE7; }
+    100% { background-color: transparent; }
+}
+
+tr.row-updated-flash td {
+    animation: sbRowFlash 1.2s ease;
+}
+
+/* ── Live Delivery Pipeline Tracker (Change View) ── */
+.delivery-pipeline-tracker {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    margin-bottom: 20px;
+}
+
+.pipeline-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 9px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1.5px solid transparent;
+}
+
+.pipeline-step .step-icon {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.pipeline-step.completed {
+    background: #DCFCE7;
+    color: #166534;
+    border-color: #86EFAC;
+}
+
+.pipeline-step.active {
+    background: #059669;
+    color: #FFFFFF;
+    border-color: #059669;
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35);
+}
+
+.pipeline-step.pending {
+    background: #F8FAF9;
+    color: #64748B;
+    border-color: #E2E8F0;
+}
+
+.pipeline-step.pending:hover,
+.pipeline-step.completed:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.pipeline-connector {
+    color: #94A3B8;
+    font-size: 0.85rem;
+    font-weight: 800;
+    user-select: none;
+}
+
+.pipeline-cancelled-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: #FEE2E2;
+    color: #991B1B;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border: 1.5px solid #FECACA;
+}
+
+.pipeline-cancel-btn {
+    margin-left: auto;
+    padding: 7px 15px;
+    border-radius: 8px;
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1.5px solid #FECACA;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+
+.pipeline-cancel-btn:hover {
+    background: #DC2626;
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+}
+
+.pipeline-reopen-btn {
+    margin-left: auto;
+    padding: 7px 15px;
+    border-radius: 8px;
+    background: #EFF6FF;
+    color: #2563EB;
+    border: 1.5px solid #BFDBFE;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+
+.pipeline-reopen-btn:hover {
+    background: #2563EB;
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+/* ── Modern Floating Notification Toast ── */
+.sb-toast-container {
+    position: fixed;
+    top: 80px;
+    right: 28px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.sb-toast {
+    pointer-events: auto;
+    background: #FFFFFF;
+    border: 1px solid #A7F3D0;
+    border-left: 4.5px solid #059669;
+    border-radius: 11px;
+    padding: 12px 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.86rem;
+    color: #0D1F19;
+    min-width: 300px;
+    max-width: 440px;
+    animation: sbToastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+@keyframes sbToastIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.sb-toast.fade-out {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.sb-toast-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.sb-toast-text {
+    flex: 1;
+    line-height: 1.45;
+}
+
+.sb-toast-close {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    color: #94A3B8;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.12s ease;
+    border-radius: 4px;
+}
+
+.sb-toast-close:hover {
+    color: #0D1F19;
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    18. PRODUCT THUMBNAIL & MEDIA PREVIEW
    ────────────────────────────────────────────────────────────────────────── */
