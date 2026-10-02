@@ -388,27 +388,6 @@
         }
     });
 
-    // Payment Pill Selector on Checkout Form
-    const paymentPills = document.querySelectorAll('.payment-pill');
-    paymentPills.forEach(pill => {
-        pill.addEventListener('click', function () {
-            paymentPills.forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            const radio = this.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-        });
-    });
-
-    // Delivery Slot Pill Selector
-    const slotPills = document.querySelectorAll('.slot-pill');
-    slotPills.forEach(pill => {
-        pill.addEventListener('click', function () {
-            slotPills.forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            const radio = this.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-        });
-    });
 
     // Dynamic Promo Code System
     const applyPromoBtn = document.getElementById('applyPromoBtn');
@@ -460,17 +439,39 @@
         });
     }
 
-    // Checkout Form AJAX Submission
+    // Checkout Form Submission - Direct WhatsApp Order
     const checkoutForm = document.getElementById('checkoutForm');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', async function (e) {
             e.preventDefault();
+
+            // Validate required fields client-side to prevent button getting stuck
+            const fullName = document.getElementById('fullName');
+            const phoneNumber = document.getElementById('phoneNumber');
+            const deliveryAddress = document.getElementById('deliveryAddress');
+
+            if (!fullName || !fullName.value.trim()) {
+                alert('Please enter your Full Name.');
+                if (fullName) fullName.focus();
+                return;
+            }
+            if (!phoneNumber || !phoneNumber.value.trim()) {
+                alert('Please enter your Phone Number.');
+                if (phoneNumber) phoneNumber.focus();
+                return;
+            }
+            if (!deliveryAddress || !deliveryAddress.value.trim()) {
+                alert('Please enter your Delivery Address.');
+                if (deliveryAddress) deliveryAddress.focus();
+                return;
+            }
+
             const submitBtn = document.getElementById('submitOrderBtn');
-            const origText = submitBtn ? submitBtn.innerHTML : '';
+            const origHtml = submitBtn ? submitBtn.innerHTML : '';
 
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = `<span>Scheduling Harvest &amp; Order...</span>`;
+                submitBtn.innerHTML = `<span>Confirming Harvest Order...</span>`;
             }
 
             try {
@@ -492,19 +493,22 @@
                 const data = await response.json();
 
                 if (data.success && data.redirect_url) {
-                    showToast('🎉 Order confirmed! Scheduling your organic harvest...');
+                    showToast('🌱 Order placed! Showing your order details...');
+
+                    // Navigate directly to the Order Details page with 10s auto-redirect window
                     setTimeout(() => {
                         window.location.href = data.redirect_url;
-                    }, 500);
+                    }, 200);
                 } else {
-                    showToast(data.error || 'Please fill in required fields.', 'error');
+                    alert(data.error || 'Please fill in all required fields.');
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = origText;
+                        submitBtn.innerHTML = origHtml;
                     }
                 }
             } catch (err) {
                 console.error('Checkout error:', err);
+                // Fallback: submit form natively
                 checkoutForm.submit();
             }
         });
