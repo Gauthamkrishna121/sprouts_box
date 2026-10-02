@@ -14,10 +14,10 @@
   </div>
   
   <div class="custom-sidebar">
-    <!-- Store Catalog Section -->
+    <!-- Store Catalog & Orders Section -->
     <div class="sidebar-section">
       <div class="sidebar-section-header">
-        <span class="section-tag">CATALOG &amp; STORE</span>
+        <span class="section-tag">CATALOG &amp; INVENTORY</span>
       </div>
       <ul class="sidebar-menu">
         <li>
@@ -27,6 +27,9 @@
               <span class="menu-label">Products</span>
             </span>
             <div class="menu-item-actions">
+              {% if admin_stats.out_of_stock_products %}
+                <span class="sidebar-warning-badge" title="{{ admin_stats.out_of_stock_products }} items out of stock">⚠️ {{ admin_stats.out_of_stock_products }}</span>
+              {% endif %}
               {% if admin_stats.total_products %}
                 <span class="sidebar-count-badge" title="Total Products">{{ admin_stats.total_products }}</span>
               {% endif %}
@@ -45,6 +48,21 @@
                 <span class="sidebar-count-badge" title="Total Categories">{{ admin_stats.total_categories }}</span>
               {% endif %}
               <span class="sidebar-add-pill" onclick="event.preventDefault(); window.location.href='{% url 'admin:store_category_add' %}';" title="Add New Category">+ Add</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin:store_order_changelist' %}" class="sidebar-menu-item">
+            <span class="menu-item-main">
+              <span class="menu-icon">📦</span>
+              <span class="menu-label">Customer Orders</span>
+            </span>
+            <div class="menu-item-actions">
+              {% if admin_stats.pending_orders %}
+                <span class="sidebar-pending-badge" title="{{ admin_stats.pending_orders }} Pending Orders">{{ admin_stats.pending_orders }} pending</span>
+              {% elif admin_stats.total_orders %}
+                <span class="sidebar-count-badge" title="Total Orders">{{ admin_stats.total_orders }}</span>
+              {% endif %}
             </div>
           </a>
         </li>
