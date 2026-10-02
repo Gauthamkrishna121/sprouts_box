@@ -22,18 +22,43 @@
             <span class="pill-value">#{{ order.order_number }}</span>
         </div>
 
-        <!-- WhatsApp Instant Connect Action -->
+        <!-- WhatsApp 10-Second Auto-Redirect Window -->
         {% if whatsapp_url %}
-        <div class="whatsapp-prompt-box">
-            <div class="prompt-icon">
-                <i data-feather="message-circle"></i>
+        <div class="whatsapp-redirect-card" id="waRedirectCard">
+            <!-- Professional System Upgrade Notice Box -->
+            <div class="system-upgrade-notice">
+                <div class="upgrade-notice-header">
+                    <span class="notice-tag"><i data-feather="info"></i> Ordering System Notice</span>
+                    <span class="pulse-status-badge"><span class="pulse-dot"></span> Auto-Redirect Active</span>
+                </div>
+                <p class="upgrade-notice-text">
+                    We are currently upgrading our automated online ordering system. In the meantime, please complete your order through WhatsApp with our farm dispatch team. Thank you for your kind patience and understanding!
+                </p>
             </div>
-            <div class="prompt-content">
-                <h4>Get Instant WhatsApp Updates</h4>
-                <p>Send your order confirmation to our farm dispatch team on WhatsApp for live harvest and delivery status!</p>
-                <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-whatsapp-order">
-                    <i data-feather="message-circle"></i> Confirm Order on WhatsApp
+
+            <div class="redirect-header">
+                <div class="redirect-icon-pulse">
+                    <i data-feather="message-circle"></i>
+                </div>
+                <div class="redirect-header-text">
+                    <h3 id="redirectTitle">Redirecting to WhatsApp in <span class="countdown-num" id="countdownSecs">10</span> seconds</h3>
+                    <p id="redirectSubtitle">Your order details are displayed below and will be automatically pre-filled in your WhatsApp chat so you can send them with one tap.</p>
+                </div>
+            </div>
+
+            <!-- Animated 10s Progress Bar -->
+            <div class="redirect-progress-bar-wrap">
+                <div class="redirect-progress-bar-fill" id="redirectProgress"></div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="redirect-action-row">
+                <a href="{{ whatsapp_url }}" id="openWaNowBtn" target="_blank" rel="noopener" class="btn btn-whatsapp-now">
+                    <i data-feather="message-circle"></i> Open WhatsApp Now
                 </a>
+                <button type="button" id="cancelRedirectBtn" class="btn btn-cancel-redirect">
+                    <i data-feather="pause-circle"></i> Cancel Auto-Redirect
+                </button>
             </div>
         </div>
         {% endif %}
@@ -99,4 +124,114 @@
         </div>
     </div>
 </div>
+
+{% if whatsapp_url %}
+<script>
+    (function () {
+        const whatsappUrl = "{{ whatsapp_url|escapejs }}";
+        if (!whatsappUrl) return;
+
+        let timeLeft = 10;
+        let isCancelled = false;
+        const countdownEl = document.getElementById('countdownSecs');
+        const progressBar = document.getElementById('redirectProgress');
+        const cancelBtn = document.getElementById('cancelRedirectBtn');
+        const openNowBtn = document.getElementById('openWaNowBtn');
+        const redirectTitle = document.getElementById('redirectTitle');
+        const redirectSubtitle = document.getElementById('redirectSubtitle');
+        const redirectCard = document.getElementById('waRedirectCard');
+
+        // Smoothly drain the progress bar from 100% to 0% over 10s
+        if (progressBar) {
+            progressBar.style.width = '100%';
+            setTimeout(() => {
+                progressBar.style.transition = 'width 10s linear';
+                progressBar.style.width = '0%';
+            }, 50);
+        }
+
+        const timer = setInterval(() => {
+            if (isCancelled) {
+                clearInterval(timer);
+                return;
+            }
+
+            timeLeft -= 1;
+            if (countdownEl) {
+                countdownEl.textContent = timeLeft;
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                triggerRedirect();
+            }
+        }, 1000);
+
+        function triggerRedirect() {
+            if (isCancelled) return;
+            if (redirectTitle) {
+                redirectTitle.innerHTML = 'Connecting to WhatsApp...';
+            }
+            if (redirectSubtitle) {
+                redirectSubtitle.innerHTML = 'Opening your harvest order chat with our farm manager.';
+            }
+
+            // Attempt window.open first; fallback to direct location change
+            const newTab = window.open(whatsappUrl, '_blank');
+            if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+                window.location.href = whatsappUrl;
+            } else {
+                if (redirectTitle) {
+                    redirectTitle.innerHTML = '✓ WhatsApp Opened in New Tab';
+                }
+                if (redirectSubtitle) {
+                    redirectSubtitle.innerHTML = 'Your order details are displayed below. If the chat didn\'t open, tap the button below.';
+                }
+                if (progressBar) {
+                    progressBar.parentElement.style.display = 'none';
+                }
+                if (cancelBtn) {
+                    cancelBtn.style.display = 'none';
+                }
+            }
+        }
+
+        // Cancel / Pause Auto-Redirect
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function () {
+                isCancelled = true;
+                clearInterval(timer);
+                if (progressBar) {
+                    progressBar.style.transition = 'none';
+                    progressBar.style.width = '100%';
+                    progressBar.style.background = '#cbd5e1';
+                }
+                if (redirectTitle) {
+                    redirectTitle.innerHTML = 'Auto-Redirect Paused';
+                }
+                if (redirectSubtitle) {
+                    redirectSubtitle.innerHTML = 'Take your time reviewing your order details below. You can send your order to WhatsApp whenever you are ready.';
+                }
+                cancelBtn.style.display = 'none';
+                if (redirectCard) {
+                    redirectCard.classList.add('paused');
+                }
+            });
+        }
+
+        // Open WhatsApp Now button
+        if (openNowBtn) {
+            openNowBtn.addEventListener('click', function () {
+                isCancelled = true;
+                clearInterval(timer);
+                if (redirectTitle) {
+                    redirectTitle.innerHTML = 'WhatsApp Chat Opened';
+                }
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                if (progressBar) progressBar.parentElement.style.display = 'none';
+            });
+        }
+    })();
+</script>
+{% endif %}
 {% endblock content %}

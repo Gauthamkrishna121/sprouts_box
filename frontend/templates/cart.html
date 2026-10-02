@@ -272,72 +272,30 @@
                             </div>
                         </div>
 
-                        <!-- Harvest Delivery Slot -->
-                        <div class="form-field-group">
-                            <label><i data-feather="clock"></i> Preferred Harvest Delivery Slot</label>
-                            <div class="delivery-slots-grid">
-                                <label class="slot-pill active">
-                                    <input type="radio" name="delivery_slot" value="morning" checked>
-                                    <span class="slot-content">
-                                        <strong>🌅 Morning Slot</strong>
-                                        <small>7:00 AM – 11:00 AM (Freshest)</small>
-                                    </span>
-                                </label>
-                                <label class="slot-pill">
-                                    <input type="radio" name="delivery_slot" value="evening">
-                                    <span class="slot-content">
-                                        <strong>🌇 Evening Slot</strong>
-                                        <small>4:00 PM – 8:00 PM</small>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-
                         <!-- Special Instructions -->
                         <div class="form-field-group">
                             <label for="deliveryNotes"><i data-feather="message-square"></i> Special Delivery Notes <span class="optional">(Optional)</span></label>
                             <input type="text" id="deliveryNotes" name="delivery_notes" placeholder="e.g. Leave with security, call on arrival" class="form-control">
                         </div>
 
-                        <!-- Payment Methods -->
-                        <div class="form-field-group">
-                            <label><i data-feather="credit-card"></i> Payment Method</label>
-                            <div class="payment-options-grid">
-                                <label class="payment-pill active">
-                                    <input type="radio" name="payment_method" value="cod" checked>
-                                    <div class="payment-pill-icon"><i data-feather="dollar-sign"></i></div>
-                                    <span class="payment-pill-label">
-                                        <strong>Cash on Delivery (COD)</strong>
-                                        <small>Pay in cash upon doorstep delivery</small>
-                                    </span>
-                                    <span class="payment-check"><i data-feather="check"></i></span>
-                                </label>
+                        <!-- Default Payment Method (Hidden) -->
+                        <input type="hidden" name="payment_method" value="cod">
 
-                                <label class="payment-pill">
-                                    <input type="radio" name="payment_method" value="upi">
-                                    <div class="payment-pill-icon"><i data-feather="smartphone"></i></div>
-                                    <span class="payment-pill-label">
-                                        <strong>UPI / QR on Delivery</strong>
-                                        <small>Scan and pay via GPay, PhonePe, or Paytm</small>
-                                    </span>
-                                    <span class="payment-check"><i data-feather="check"></i></span>
-                                </label>
-
-                                <label class="payment-pill">
-                                    <input type="radio" name="payment_method" value="whatsapp">
-                                    <div class="payment-pill-icon"><i data-feather="message-circle"></i></div>
-                                    <span class="payment-pill-label">
-                                        <strong>Confirm Order on WhatsApp</strong>
-                                        <small>Direct instant order booking with farm manager</small>
-                                    </span>
-                                    <span class="payment-check"><i data-feather="check"></i></span>
-                                </label>
+                        <!-- Professional Online Ordering System Notice Box -->
+                        <div class="checkout-system-notice">
+                            <div class="system-notice-icon">
+                                <i data-feather="info"></i>
+                            </div>
+                            <div class="system-notice-content">
+                                <strong>Notice: Online Order System Upgrade</strong>
+                                <p>We are currently upgrading our automated online ordering system. In the meantime, please complete your order through WhatsApp. Thank you for your kind understanding!</p>
                             </div>
                         </div>
 
                         <!-- Submit Order Button -->
                         <button type="submit" class="btn btn-primary btn-submit-order" id="submitOrderBtn">
-                            <span>Place Order &bull; <strong id="btnOrderTotal">₹{{ summary.total|floatformat:2 }}</strong></span>
+                            <i data-feather="message-circle"></i>
+                            <span>Send Order via WhatsApp &bull; <strong id="btnOrderTotal">₹{{ summary.total|floatformat:2 }}</strong></span>
                             <i data-feather="arrow-right"></i>
                         </button>
                     </form>

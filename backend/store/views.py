@@ -246,12 +246,14 @@ def checkout(request):
             store_phone = '91' + store_phone
 
         items_formatted = "%0A".join([quote(line) for line in items_summary_text])
+        notes_text = f"*Special Notes:* {quote(order.delivery_notes)}%0A" if order.delivery_notes else ""
         whatsapp_message = (
             f"*🌱 New Order from Sprouts Box!*%0A%0A"
             f"*Order Number:* %23{order.order_number}%0A"
             f"*Customer:* {quote(order.full_name)} ({order.phone_number})%0A"
             f"*Delivery Address:* {quote(order.delivery_address)}, {quote(order.city)} {quote(order.postal_code or '')}%0A"
-            f"*Payment Method:* {quote(order.get_payment_method_display())}%0A%0A"
+            f"{notes_text}"
+            f"*Payment Method:* Cash on Delivery (COD)%0A%0A"
             f"*Items Ordered:*%0A{items_formatted}%0A%0A"
             f"*Subtotal:* ₹{order.subtotal:.2f}%0A"
             f"*Delivery Fee:* {'FREE' if order.shipping_fee == 0 else f'₹{order.shipping_fee:.2f}'}%0A"
@@ -312,8 +314,11 @@ def order_success(request):
         )
         whatsapp_url = f"https://wa.me/{store_phone}?text={whatsapp_message}"
 
+    send_wa = request.GET.get('send_wa') == '1'
+
     return render(request, 'order_success.html', {
         'order': order,
         'whatsapp_url': whatsapp_url,
+        'send_wa': send_wa,
     })
 
