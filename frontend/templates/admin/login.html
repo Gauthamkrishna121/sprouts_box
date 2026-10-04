@@ -1,0 +1,141 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Admin Sign In | Sprouts Box Control Center{% endblock %}
+
+{% block branding %}
+  {# Disabled so search bar and user profile dropdown are not rendered on the login page #}
+{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="sb-login-wrapper">
+  <!-- Ambient background glow elements -->
+  <div class="sb-login-orb sb-orb-1"></div>
+  <div class="sb-login-orb sb-orb-2"></div>
+
+  <div class="sb-login-card">
+    <!-- Brand Header -->
+    <div class="sb-login-header">
+      <div class="sb-login-logo">
+        <span class="sb-login-logo-icon">🌱</span>
+      </div>
+      <h1 class="sb-login-brand">Sprouts Box</h1>
+      <span class="sb-login-badge">Control Center · Admin Portal</span>
+      <p class="sb-login-subtitle">Enter your administrator credentials to manage catalog, orders, and site settings.</p>
+    </div>
+
+    <!-- Error Messages -->
+    {% if form.errors and not form.non_field_errors %}
+      <div class="sb-login-alert">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-text">Please correct the errors in the fields below.</span>
+      </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      <div class="sb-login-alert">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-text">
+          {% for error in form.non_field_errors %}
+            <div>{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+      <div class="sb-login-alert">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-text">You are signed in as <strong>{{ username }}</strong>, but this account is not authorized to access the administration portal.</span>
+      </div>
+    {% endif %}
+
+    <!-- Login Form -->
+    <form action="{{ app_path }}" method="post" id="login-form" class="sb-login-form">
+      {% csrf_token %}
+
+      <div class="sb-form-group">
+        <label for="id_username" class="sb-field-label">Username</label>
+        <div class="sb-field-box">
+          <span class="sb-field-icon">👤</span>
+          <input type="text" 
+                 name="username" 
+                 autofocus 
+                 autocapitalize="none" 
+                 autocomplete="username" 
+                 maxlength="150" 
+                 required 
+                 id="id_username" 
+                 class="sb-field-input" 
+                 placeholder="Administrator username"
+                 value="{{ form.username.value|default:'' }}">
+        </div>
+        {% if form.username.errors %}
+          <div class="sb-error-text">{{ form.username.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="sb-form-group">
+        <label for="id_password" class="sb-field-label">Password</label>
+        <div class="sb-field-box">
+          <span class="sb-field-icon">🔒</span>
+          <input type="password" 
+                 name="password" 
+                 autocomplete="current-password" 
+                 required 
+                 id="id_password" 
+                 class="sb-field-input" 
+                 placeholder="••••••••">
+          <button type="button" class="sb-pwd-toggle" id="togglePasswordBtn" title="Show or hide password" aria-label="Toggle password visibility">
+            👁️
+          </button>
+        </div>
+        {% if form.password.errors %}
+          <div class="sb-error-text">{{ form.password.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <input type="hidden" name="next" value="{{ next|default:'/admin/' }}">
+
+      <div class="sb-form-actions">
+        <button type="submit" class="sb-login-btn">
+          <span>Sign In to Control Center</span>
+          <span class="btn-arrow">➔</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer links & security note -->
+    <div class="sb-login-footer">
+      <div class="sb-ssl-note">
+        <span class="ssl-shield">🛡️</span>
+        <span>Secure 256-Bit SSL Encrypted Admin Portal</span>
+      </div>
+      <a href="/" class="sb-storefront-return">
+        <span>← Return to Public Storefront</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const toggleBtn = document.getElementById('togglePasswordBtn');
+  const pwdInput = document.getElementById('id_password');
+  if (toggleBtn && pwdInput) {
+    toggleBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isPassword = pwdInput.type === 'password';
+      pwdInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.textContent = isPassword ? '🙈' : '👁️';
+    });
+  }
+})();
+</script>
+{% endblock %}
