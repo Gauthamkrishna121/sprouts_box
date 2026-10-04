@@ -1,0 +1,58 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block object-tools %}
+  {# Emptied to prevent duplicate Add Order button - primary action is in the header #}
+{% endblock %}
+
+{% block content_title %}
+<div class="order-page-header">
+  <!-- Top row: Page title and primary Add Order action -->
+  <div class="order-title-row">
+    <div class="order-heading-group">
+      <h1 class="order-page-title">Orders</h1>
+      <span class="order-count-pill">{{ order_total_count }} total</span>
+    </div>
+
+    <div class="order-top-actions">
+      <a href="{% url 'admin:store_order_add' %}" class="btn-add-order" title="Create a new order">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Add Order</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Full-width unified filter toolbar: Status tabs on the left + Payment filters on the right filling the entire width -->
+  <div class="order-filter-toolbar">
+    <div class="order-status-tabs" role="tablist" aria-label="Order Status Filter">
+      {% for tab in order_status_tabs %}
+        <a href="{{ tab.url }}" 
+           class="order-status-tab {% if tab.is_active %}active{% endif %} {{ tab.badge_class }}" 
+           role="tab" 
+           aria-selected="{% if tab.is_active %}true{% else %}false{% endif %}"
+           title="Filter by {{ tab.label }}">
+          {% if tab.icon %}<span class="tab-icon">{{ tab.icon }}</span>{% endif %}
+          <span class="tab-label">{{ tab.label }}</span>
+          <span class="tab-count-badge">{{ tab.count }}</span>
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Payment filter filling the right side of the toolbar -->
+    <div class="order-payment-filter-wrapper">
+      <span class="payment-filter-label">Payment:</span>
+      <div class="payment-pills">
+        {% for p in payment_filter_options %}
+          <a href="{{ p.url }}" class="payment-pill-btn {% if p.is_active %}active{% endif %}">
+            {{ p.label }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block filters %}
+  {# Removed default right sidebar filter so table expands to fill the entire page #}
+{% endblock %}

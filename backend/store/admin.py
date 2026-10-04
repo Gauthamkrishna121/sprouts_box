@@ -252,17 +252,18 @@ class OrderItemInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
+        'delivery_quick_action',
         'order_number',
+        'status_badge',
         'full_name',
         'phone_number',
         'items_count',
         'formatted_total',
         'payment_method_badge',
-        'status_badge',
-        'delivery_quick_action',
         'created_at',
         'order_actions'
     )
+    list_display_links = ('order_number',)
     list_filter = ('status', 'payment_method', 'created_at')
     search_fields = ('order_number', 'full_name', 'phone_number', 'email', 'delivery_address')
     readonly_fields = (
@@ -313,6 +314,99 @@ class OrderAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        from django.db.models import Count
+        status_counts = dict(
+            Order.objects.values('status').annotate(total=Count('id')).values_list('status', 'total')
+        )
+        total_orders = Order.objects.count()
+        current_status = request.GET.get('status__exact', '')
+        current_payment = request.GET.get('payment_method__exact', '')
+
+        def build_url(status=None, payment=None):
+            q_dict = request.GET.copy()
+            if 'p' in q_dict:
+                del q_dict['p']
+            if status is not None:
+                if status == '':
+                    q_dict.pop('status__exact', None)
+                else:
+                    q_dict['status__exact'] = status
+            if payment is not None:
+                if payment == '':
+                    q_dict.pop('payment_method__exact', None)
+                else:
+                    q_dict['payment_method__exact'] = payment
+            qs = q_dict.urlencode()
+            return f"?{qs}" if qs else "?"
+
+        extra_context['order_total_count'] = total_orders
+        extra_context['current_status'] = current_status
+        extra_context['current_payment'] = current_payment
+        extra_context['order_status_tabs'] = [
+            {
+                'key': '',
+                'label': 'All Orders',
+                'icon': '📦',
+                'count': total_orders,
+                'url': build_url(status=''),
+                'is_active': not current_status or current_status == '',
+                'badge_class': 'tab-all',
+            },
+            {
+                'key': 'pending',
+                'label': 'Pending',
+                'icon': '⏳',
+                'count': status_counts.get('pending', 0),
+                'url': build_url(status='pending'),
+                'is_active': current_status == 'pending',
+                'badge_class': 'tab-pending',
+            },
+            {
+                'key': 'confirmed',
+                'label': 'Confirmed',
+                'icon': '📋',
+                'count': status_counts.get('confirmed', 0),
+                'url': build_url(status='confirmed'),
+                'is_active': current_status == 'confirmed',
+                'badge_class': 'tab-confirmed',
+            },
+            {
+                'key': 'out_for_delivery',
+                'label': 'Out for Delivery',
+                'icon': '🚚',
+                'count': status_counts.get('out_for_delivery', 0),
+                'url': build_url(status='out_for_delivery'),
+                'is_active': current_status == 'out_for_delivery',
+                'badge_class': 'tab-out-for-delivery',
+            },
+            {
+                'key': 'delivered',
+                'label': 'Delivered',
+                'icon': '✓',
+                'count': status_counts.get('delivered', 0),
+                'url': build_url(status='delivered'),
+                'is_active': current_status == 'delivered',
+                'badge_class': 'tab-delivered',
+            },
+            {
+                'key': 'cancelled',
+                'label': 'Cancelled',
+                'icon': '❌',
+                'count': status_counts.get('cancelled', 0),
+                'url': build_url(status='cancelled'),
+                'is_active': current_status == 'cancelled',
+                'badge_class': 'tab-cancelled',
+            },
+        ]
+        extra_context['payment_filter_options'] = [
+            {'label': 'All Payments', 'url': build_url(payment=''), 'is_active': not current_payment},
+            {'label': '💵 Cash on Delivery', 'url': build_url(payment='cod'), 'is_active': current_payment == 'cod'},
+            {'label': '💳 Online Payment', 'url': build_url(payment='online'), 'is_active': current_payment == 'online'},
+        ]
+        return super().changelist_view(request, extra_context=extra_context)
 
     def get_urls(self):
         from django.urls import path
@@ -388,11 +482,13 @@ class OrderAdmin(admin.ModelAdmin):
     def formatted_total(self, obj):
         return format_html('<span class="admin-price">₹{}</span>', obj.total_amount)
     formatted_total.short_description = "Total"
+    formatted_total.admin_order_field = "total_amount"
 
     def payment_method_badge(self, obj):
         label = dict(Order.PAYMENT_CHOICES).get(obj.payment_method, obj.payment_method)
         return format_html('<span class="status-badge" style="background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;">💳 {}</span>', label)
     payment_method_badge.short_description = "Payment"
+    payment_method_badge.admin_order_field = "payment_method"
 
     def status_badge(self, obj):
         colors = {
@@ -431,6 +527,7 @@ class OrderAdmin(admin.ModelAdmin):
             obj.pk, bg, text, border, obj.pk, icon, label, mark_safe(menu_items)
         )
     status_badge.short_description = "Status"
+    status_badge.admin_order_field = "status"
 
     def delivery_quick_action(self, obj):
         next_actions = {
