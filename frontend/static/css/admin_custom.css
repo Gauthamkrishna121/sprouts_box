@@ -3084,7 +3084,9 @@ tr.row-updated-flash td {
 /* ──────────────────────────────────────────────────────────────────────────
    26. MODERN ADMIN LOGIN PAGE
    ────────────────────────────────────────────────────────────────────────── */
-body.login {
+body.login,
+body:has(.sb-login-wrapper),
+body:has(#login-form) {
     background: #0D1C17 linear-gradient(135deg, #091512 0%, #112620 50%, #17332B 100%) !important;
     color: #FFFFFF !important;
     margin: 0 !important;
@@ -3097,15 +3099,28 @@ body.login {
 }
 
 body.login #header,
+body:has(.sb-login-wrapper) #header,
+body:has(#login-form) #header,
 body.login #nav-sidebar,
+body:has(.sb-login-wrapper) #nav-sidebar,
+body:has(#login-form) #nav-sidebar,
 body.login .breadcrumbs,
+body:has(.sb-login-wrapper) .breadcrumbs,
+body:has(#login-form) .breadcrumbs,
 body.login #footer,
+body:has(.sb-login-wrapper) #footer,
+body:has(#login-form) #footer,
 body.login .titles-and-tools,
 body.login .toggle-nav-sidebar {
     display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    visibility: hidden !important;
 }
 
-body.login #container {
+body.login #container,
+body:has(.sb-login-wrapper) #container,
+body:has(#login-form) #container {
     width: 100% !important;
     min-height: 100vh !important;
     display: flex !important;
@@ -3118,9 +3133,14 @@ body.login #container {
 }
 
 body.login #main,
-body.login .main {
+body.login .main,
+body:has(.sb-login-wrapper) #main,
+body:has(.sb-login-wrapper) .main,
+body:has(#login-form) #main,
+body:has(#login-form) .main {
     margin-left: 0 !important;
     padding: 0 !important;
+    padding-top: 0 !important;
     width: 100% !important;
     max-width: 460px !important;
     min-height: auto !important;
@@ -3133,7 +3153,17 @@ body.login main#content-start,
 body.login .content,
 body.login div.content,
 body.login #content,
-body.login #content-main {
+body.login #content-main,
+body:has(.sb-login-wrapper) main#content-start,
+body:has(.sb-login-wrapper) .content,
+body:has(.sb-login-wrapper) div.content,
+body:has(.sb-login-wrapper) #content,
+body:has(.sb-login-wrapper) #content-main,
+body:has(#login-form) main#content-start,
+body:has(#login-form) .content,
+body:has(#login-form) div.content,
+body:has(#login-form) #content,
+body:has(#login-form) #content-main {
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
