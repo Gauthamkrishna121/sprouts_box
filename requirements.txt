@@ -1,0 +1,11 @@
+# Sprouts Box ("Lush & Healthy") - Dependencies
+
+# Core Web Framework
+Django==6.1.1
+asgiref==3.12.1
+sqlparse==0.6.0
+tzdata==2026.4
+
+# Image Handling (Store Product Images)
+Pillow==12.3.0
+
