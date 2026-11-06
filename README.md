@@ -8,7 +8,8 @@ The project has been separated into backend and frontend directories for better 
 
 - **`backend/`**: Contains the Django project (`sproutsbox` settings, the `store` app, database, and configurations).
 - **`frontend/`**: Contains the server-rendered HTML templates (`templates/`) and static assets (`static/css`, `static/images`).
-- **`venv/`**: The Python virtual environment.
+- **`requirements.txt`**: Pinned Python dependencies for clean, reproducible installations across environments.
+- **`venv/`**: The local Python virtual environment (ignored by Git).
 
 ---
 
